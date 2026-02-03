@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="header-top">
+            <a href="#">Administration</a>
+            <a href="#">Accueil</a>
+            <a href="#">Mon profil</a>
+            <a href="#">Se déconnecter</a>
+        </div>
+
+        <div class="admin-alert">
+            Le lien Administration est accessible uniquement en tant qu'administrateur.
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <strong>Date du jour :</strong> {{ "now"|date("d/m/Y") }}<br>
+            <strong>Participant :</strong> Jeanine L.
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-column">
+                <h4 style="margin: 0">Filtrer les sorties</h4>
+                <label>Campus :
+                    <select><option>CHARTRES DE BRETAGNE</option></select>
+                </label>
+                <label>Le nom de la sortie contient :
+                    <input type="text" placeholder="search">
+                </label>
+                <label>Entre <input type="date"> et <input type="date"></label>
+            </div>
+            <div class="filter-column" style="justify-content: center;">
+                <label><input type="checkbox"> Sorties dont je suis l'organisateur/trice</label>
+                <label><input type="checkbox"> Sorties auxquelles je suis inscrit/e</label>
+                <label><input type="checkbox"> Sorties auxquelles je ne suis pas inscrit/e</label>
+                <label><input type="checkbox"> Sorties terminées</label>
+            </div>
+            <button class="btn-maquette" style="align-self: center; height: 60px;">Rechercher</button>
+        </div>
+
+        <table class="table-maquette">
+            <thead>
+            <tr>
+                <th>Nom de la sortie</th>
+                <th>Date de la sortie</th>
+                <th>Clôture</th>
+                <th>Inscrits/Places</th>
+                <th>État</th>
+                <th>Inscrit</th>
+                <th>Organisateur</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {# Ton réceptacle dynamique #}
+            {% for sortie in sorties|default([]) %}
+                {# ... même code que précédemment ... #}
+            {% else %}
+                <tr><td colspan="8" style="text-align: center;">Aucune sortie n'est disponible pour le moment.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <button class="btn-maquette">Créer une sortie</button>
+    </div>
+{% endblock %}

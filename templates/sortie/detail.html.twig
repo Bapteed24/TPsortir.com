@@ -1,0 +1,108 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Afficher une sortie{% endblock %}
+
+{% block body %}
+<main class="container">
+  <h1 class="page-title">Afficher une sortie</h1>
+
+  {# Main info zone: 2 columns like the mockup #}
+  <section class="card sortie-detail">
+    <div class="sortie-detail__cols">
+      <div class="sortie-detail__col">
+        <div class="row">
+          <div class="label">Nom de la sortie</div>
+          <div class="value">{{ sortie.nom }}</div>
+        </div>
+
+        <div class="row">
+          <div class="label">Date et heure de la sortie</div>
+          <div class="value">{{ sortie.dateHeureDebut }}</div>
+        </div>
+
+        <div class="row">
+          <div class="label">Date limite d'inscription</div>
+          <div class="value">{{ sortie.dateLimiteInscription }}</div>
+        </div>
+
+        <div class="row">
+          <div class="label">Nombre de places</div>
+          <div class="value">{{ sortie.nbInscriptionsMax }}</div>
+        </div>
+
+        <div class="row">
+          <div class="label">Durée (en minutes)</div>
+          <div class="value">{{ sortie.dureeMinutes }}</div>
+        </div>
+      </div>
+
+      <div class="sortie-detail__col">
+        <div class="row">
+          <div class="label">Campus</div>
+          <div class="value">{{ sortie.campus ?? '—' }}</div>
+        </div>
+
+        <div class="row">
+          <div class="label">Ville</div>
+          <div class="value">{{ sortie.ville ?? '—' }}</div>
+        </div>
+
+        <div class="row">
+          <div class="label">Lieu</div>
+          <div class="value">{{ sortie.lieu.nom ?? '—' }}</div>
+        </div>
+
+        <div class="row">
+          <div class="label">Rue</div>
+          <div class="value">{{ sortie.rue ?? '—' }}</div>
+        </div>
+
+        <div class="row">
+          <div class="label">Code postal</div>
+          <div class="value">{{ sortie.codePostal ?? '—' }}</div>
+        </div>
+
+        <div class="row">
+          <div class="label">Latitude / Longitude</div>
+          <div class="value">{{ sortie.latitude ?? '—' }} / {{ sortie.longitude ?? '—' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row row--wide">
+      <div class="label">Description et infos</div>
+      <div class="value">{{ sortie.description }}</div>
+    </div>
+
+    {# Bottom area: small box bottom-left like mockup #}
+    <div class="bottom-area">
+      <section class="participants-box" aria-label="Liste des participants inscrits">
+        <h2 class="participants-box__title">Liste des participants inscrits</h2>
+
+        <table class="table table--mini">
+          <thead>
+          <tr>
+            <th scope="col">Pseudo</th>
+            <th scope="col">Nom</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for p in sortie.inscrits %}
+            <tr>
+              <td>
+                <a href="{{ path('participant_show', {id: p.id}) }}">{{ p.pseudo }}</a>
+              </td>
+              <td>{{ p.prenom }} {{ p.nom }}</td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="2">Aucun participant</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </section>
+</main>
+{% endblock %}

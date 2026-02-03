@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sortir - Accueil{% endblock %}
+
+{% block body %}
+<main class="container">
+  <section class="filters card">
+    <h2>Filtrer les sorties</h2>
+
+    <form method="get" class="filters-layout">
+      <div class="filters-left">
+        <div class="row">
+          <label for="campus">Campus</label>
+          <select id="campus" name="campus">
+            {% for c in campusOptions %}
+              <option value="{{ c }}" {% if filters.campus == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="row">
+          <label for="q">Le nom de la sortie contient</label>
+          <input id="q" name="q" type="search" value="{{ filters.q }}" placeholder="search">
+        </div>
+
+        <div class="row row-inline">
+          <label for="from">Entre</label>
+          <input id="from" name="from" type="date" value="{{ filters.from }}">
+          <span class="inline-text">et</span>
+          <input id="to" name="to" type="date" value="{{ filters.to }}">
+        </div>
+      </div>
+
+      <div class="filters-middle">
+        <label class="check"><input type="checkbox" name="mine" {% if filters.mine %}checked{% endif %}> Sorties dont je suis l'organisateur/trice</label>
+        <label class="check"><input type="checkbox" name="registered" {% if filters.registered %}checked{% endif %}> Sorties auxquelles je suis inscrit/e</label>
+        <label class="check"><input type="checkbox" name="not_registered" {% if filters.not_registered %}checked{% endif %}> Sorties auxquelles je ne suis pas inscrit/e</label>
+        <label class="check"><input type="checkbox" name="finished" {% if filters.finished %}checked{% endif %}> Sorties terminées</label>
+      </div>
+
+      <div class="filters-right">
+        <button class="btn btn--big" type="submit">Rechercher</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="card">
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nom de la sortie</th>
+            <th>Date de la sortie</th>
+            <th>Clôture</th>
+            <th>Inscrits/Places</th>
+            <th>État</th>
+            <th>Inscrit</th>
+            <th>Organisateur</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for s in sorties %}
+            <tr>
+              <td>{{ s.nom }}</td>
+              <td>{{ s.dateHeureDebut }}</td>
+              <td>{{ s.dateLimiteInscription }}</td>
+              <td>{{ s.inscrits_count }}/{{ s.nbInscriptionsMax }}</td>
+              <td>{{ s.etat }}</td>
+              <td class="center">{{ s.estInscrit ? 'X' : '' }}</td>
+              <td>
+                <a href="{{ path('participant_show', {id: s.organisateur.id}) }}">{{ s.organisateur.pseudo }}</a>
+              </td>
+              <td>
+                {# Always show Afficher link if present #}
+                {% if 'Afficher' in s.actions %}
+                  <a href="{{ path('sortie_detail', {id: s.id}) }}">Afficher</a>
+                {% endif %}
+
+                {# Other actions are shown as links (placeholders) #}
+                {% for a in s.actions %}
+                  {% if a != 'Afficher' %}
+                    <a href="#" class="action-link">{{ a }}</a>
+                  {% endif %}
+                {% endfor %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="create-sortie">
+      <a class="btn" href="{{ path('sortie_create') }}">Créer une sortie</a>
+    </div>
+  </section>
+</main>
+{% endblock %}

@@ -62,8 +62,7 @@ final class AdminController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // Redirection après inscription
-//            return $this->redirectToRoute('app_login');
+            return $this->redirectToRoute('app_admin_user_list');
         }
 
         // Affichage du formulaire
@@ -94,7 +93,7 @@ final class AdminController extends AbstractController
             $entityManager->flush();
 
             // Redirection après inscription
-//            return $this->redirectToRoute('app_login');
+            return $this->redirectToRoute('app_admin_user_list');
         }
 
         // Affichage du formulaire
@@ -110,31 +109,12 @@ final class AdminController extends AbstractController
         User $user,
     ): Response
     {
+        $entityManager->remove($user);
+        $entityManager->flush();
 
-        // Création du formulaire
-        $form = $this->createForm(RegistrationFormType::class, $user);
-        // Gestion de la requête
-        $form->handleRequest($request);
-        // Soumission + validation
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            // ⚠️ Ici tu hash normalement le mot de passe
-            // (je peux te le rajouter si tu veux)
-
-            $entityManager->persist($user);
-            $entityManager->flush();
-
-            // Redirection après inscription
-//            return $this->redirectToRoute('app_login');
-        }
-
-        // Affichage du formulaire
-        return $this->render('admin/user/create.html.twig', [
-            'registrationForm' => $form->createView(),
-        ]);
+        // Redirection après inscription
+        return $this->redirectToRoute('app_admin_user_list');
     }
-
-
 
     #[Route('/sortie/ajouter', name: 'app_admin_sortie_create')]
     public function createSortie(): Response

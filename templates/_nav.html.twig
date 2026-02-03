@@ -8,16 +8,24 @@
         <div class="topbar__right">
             <nav class="navlinks" aria-label="Navigation principale">
                 {% if is_granted('ROLE_ADMIN') %}
-                    <a href="#">Administration</a> |
+                    <a href="{{ path('app_admin') }}">Administration</a>
                 {% endif %}
                 <a href="{{ path('app_main') }}">Accueil</a> |
-                <a href="#">Mon profil</a> |
-                <a href="{{ path('app_login') }}">Se connecter</a>
+                <a href="{{ path('app_profile') }}">Mon profil</a>
+                <nav>
+                    {% if app.user %}
+                        <span></span>
+                        <a href="{{ path('app_logout') }}">Déconnexion</a>
+                    {% else %}
+                        <a href="{{ path('app_login') }}">Connexion</a>
+                    {% endif %}
+                </nav>
+
             </nav>
 
             <div class="user-info">
                 <div>Date du jour : {{ "now"|date("d/m/Y") }}</div>
-                <div>Participant : <strong>{{ participantNom ?? 'Jeannine L.' }}</strong></div>
+                <div>Bonjour {{ app.user.firstname }}</strong></div>
             </div>
         </div>
     </div>

@@ -1,0 +1,32 @@
+<div>
+    <h1>Liste des utilisateurs</h1>
+    <div style="margin-bottom: 40px">
+        <a href="{{ path('app_admin') }}">Dashboard</a><span> / </span>
+        <a>Utilisateurs</a>
+    </div>
+
+
+
+    <a href="{{ path('app_admin_user_create') }}">Créer un nouvelle utilisateur</a>
+    <table>
+        <thead>
+            <th>Id</th>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th></th>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.id}}</td>
+                    <td>{{ user.name}}</td>
+                    <td>{{ user.firstname}}</td>
+                    <td>
+                        <a href="{{ path('adminUserUpdate', {id: user.id}) }}">Modifier</a>
+                        <a href="{{ path('adminUserDelete', {id: user.id}) }}">Supprimer</a>
+                    </td>
+                </tr>
+            {% endfor  %}
+        </tbody>
+    </table>
+</div>

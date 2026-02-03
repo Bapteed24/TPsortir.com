@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello AdminController!{% endblock %}
+
+{% block body %}
+    <h1>Création d'utilisateur</h1>
+    <div style="margin-bottom: 40px">
+        <a href="{{ path('app_admin') }}">Dashboard</a><span> / </span>
+        <a href="{{ path('adminUserList') }}">Utilisateurs</a>
+    </div>
+
+    <div>
+        <form method="post">
+            {{ form_start(registrationForm) }}
+            {{ form_widget(registrationForm) }}
+            <button type="submit">S’inscrire</button>
+            {{ form_end(registrationForm) }}
+            This friendly message is coming from:
+        </form>
+    </div>
+{% endblock %}

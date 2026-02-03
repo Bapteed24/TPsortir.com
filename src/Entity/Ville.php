@@ -78,16 +78,10 @@ class Ville
 
         return $this;
     }
-
-    public function removeLieux(Lieu $lieux): static
+    public function removeLieux(Lieu $lieu): static
     {
-        if ($this->lieux->removeElement($lieux)) {
-            // set the owning side to null (unless already changed)
-            if ($lieux->getVille() === $this) {
-                $lieux->setVille(null);
-            }
-        }
-
+        $this->lieux->removeElement($lieu);
         return $this;
     }
+
 }

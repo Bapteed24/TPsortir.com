@@ -22,6 +22,7 @@ class Sortie
     #[ORM\Column]
     private ?\DateTimeImmutable $dateHeureDebut = null;
 
+    // Option 1 (tu gardes TIME) :
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     private ?\DateTime $duree = null;
 
@@ -31,7 +32,8 @@ class Sortie
     #[ORM\Column]
     private ?int $nbInscriptionMax = null;
 
-    #[ORM\Column(length: 255)]
+    // Reco: TEXT plutôt que 255
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $infoSortie = null;
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
@@ -41,6 +43,11 @@ class Sortie
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Lieu $lieu = null;
+
+    // IMPORTANT: Etat manquant (si UML le prévoit)
+    #[ORM\ManyToOne(inversedBy: 'sorties')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Etat $etat = null;
 
     #[ORM\ManyToOne(inversedBy: 'sortiesOrganisees')]
     #[ORM\JoinColumn(nullable: false)]
@@ -57,136 +64,52 @@ class Sortie
         $this->participants = new ArrayCollection();
     }
 
+    public function getId(): ?int { return $this->id; }
 
+    public function getName(): ?string { return $this->name; }
+    public function setName(string $name): static { $this->name = $name; return $this; }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    public function getDateHeureDebut(): ?\DateTimeImmutable { return $this->dateHeureDebut; }
+    public function setDateHeureDebut(\DateTimeImmutable $dateHeureDebut): static { $this->dateHeureDebut = $dateHeureDebut; return $this; }
 
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
+    public function getDuree(): ?\DateTime { return $this->duree; }
+    public function setDuree(\DateTime $duree): static { $this->duree = $duree; return $this; }
 
-    public function setName(string $name): static
-    {
-        $this->name = $name;
+    public function getDateLimiteInscription(): ?\DateTimeImmutable { return $this->dateLimiteInscription; }
+    public function setDateLimiteInscription(\DateTimeImmutable $dateLimiteInscription): static { $this->dateLimiteInscription = $dateLimiteInscription; return $this; }
 
-        return $this;
-    }
+    public function getNbInscriptionMax(): ?int { return $this->nbInscriptionMax; }
+    public function setNbInscriptionMax(int $nbInscriptionMax): static { $this->nbInscriptionMax = $nbInscriptionMax; return $this; }
 
-    public function getDateHeureDebut(): ?\DateTimeImmutable
-    {
-        return $this->dateHeureDebut;
-    }
+    public function getInfoSortie(): ?string { return $this->infoSortie; }
+    public function setInfoSortie(?string $infoSortie): static { $this->infoSortie = $infoSortie; return $this; }
 
-    public function setDateHeureDebut(\DateTimeImmutable $dateHeureDebut): static
-    {
-        $this->dateHeureDebut = $dateHeureDebut;
+    public function getCampus(): ?Campus { return $this->campus; }
+    public function setCampus(?Campus $campus): static { $this->campus = $campus; return $this; }
 
-        return $this;
-    }
+    public function getLieu(): ?Lieu { return $this->lieu; }
+    public function setLieu(?Lieu $lieu): static { $this->lieu = $lieu; return $this; }
 
-    public function getDuree(): ?\DateTime
-    {
-        return $this->duree;
-    }
+    public function getEtat(): ?Etat { return $this->etat; }
+    public function setEtat(?Etat $etat): static { $this->etat = $etat; return $this; }
 
-    public function setDuree(\DateTime $duree): static
-    {
-        $this->duree = $duree;
-
-        return $this;
-    }
-
-    public function getDateLimiteInscription(): ?\DateTimeImmutable
-    {
-        return $this->dateLimiteInscription;
-    }
-
-    public function setDateLimiteInscription(\DateTimeImmutable $dateLimiteInscription): static
-    {
-        $this->dateLimiteInscription = $dateLimiteInscription;
-
-        return $this;
-    }
-
-    public function getNbInscriptionMax(): ?int
-    {
-        return $this->nbInscriptionMax;
-    }
-
-    public function setNbInscriptionMax(int $nbInscriptionMax): static
-    {
-        $this->nbInscriptionMax = $nbInscriptionMax;
-
-        return $this;
-    }
-
-    public function getInfoSortie(): ?string
-    {
-        return $this->infoSortie;
-    }
-
-    public function setInfoSortie(string $infoSortie): static
-    {
-        $this->infoSortie = $infoSortie;
-
-        return $this;
-    }
-
-    public function getCampus(): ?Campus
-    {
-        return $this->campus;
-    }
-
-    public function setCampus(?Campus $campus): static
-    {
-        $this->campus = $campus;
-
-        return $this;
-    }
-
-    public function getLieu(): ?Lieu
-    {
-        return $this->lieu;
-    }
-
-    public function setLieu(?Lieu $lieu): static
-    {
-        $this->lieu = $lieu;
-
-        return $this;
-    }
-
-    public function getOrganisateurSortie(): ?User
-    {
-        return $this->organisateurSortie;
-    }
-
-    public function setOrganisateurSortie(?User $organisateurSortie): static
-    {
-        $this->organisateurSortie = $organisateurSortie;
-
-        return $this;
-    }
+    public function getOrganisateurSortie(): ?User { return $this->organisateurSortie; }
+    public function setOrganisateurSortie(?User $organisateurSortie): static { $this->organisateurSortie = $organisateurSortie; return $this; }
 
     /**
      * @return Collection<int, User>
      */
-    public function getParticipants(): Collection
-    {
-        return $this->participants;
-    }
+    public function getParticipants(): Collection { return $this->participants; }
 
     public function addParticipant(User $participant): static
     {
         if (!$this->participants->contains($participant)) {
             $this->participants->add($participant);
+
+            // IMPORTANT: appelle la méthode User correspondante
+            // Si tu renommes côté User -> addSortie(), remplace ici aussi
             $participant->addSorty($this);
         }
-
         return $this;
     }
 
@@ -195,7 +118,6 @@ class Sortie
         if ($this->participants->removeElement($participant)) {
             $participant->removeSorty($this);
         }
-
         return $this;
     }
 }

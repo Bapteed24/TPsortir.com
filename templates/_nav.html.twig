@@ -1,0 +1,24 @@
+<header class="topbar">
+    <div class="topbar__inner">
+        <div class="brand">
+            <div class="logo-box">LOGO</div>
+            <div class="brand__name">Sortir.com</div>
+        </div>
+
+        <div class="topbar__right">
+            <nav class="navlinks" aria-label="Navigation principale">
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="#">Administration</a> |
+                {% endif %}
+                <a href="{{ path('app_main') }}">Accueil</a> |
+                <a href="#">Mon profil</a> |
+                <a href="{{ path('app_login') }}">Se connecter</a>
+            </nav>
+
+            <div class="user-info">
+                <div>Date du jour : {{ "now"|date("d/m/Y") }}</div>
+                <div>Participant : <strong>{{ participantNom ?? 'Jeannine L.' }}</strong></div>
+            </div>
+        </div>
+    </div>
+</header>

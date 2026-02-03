@@ -1,22 +1,22 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="container">
-        <div class="header-top">
-            <a href="#">Administration</a>
-            <a href="#">Accueil</a>
-            <a href="#">Mon profil</a>
-            <a href="#">Se déconnecter</a>
-        </div>
 
-        <div class="admin-alert">
-            Le lien Administration est accessible uniquement en tant qu'administrateur.
-        </div>
+{#        <div class="header-top">#}
+{#            <a href="#">Administration</a>#}
+{#            <a href="#">Accueil</a>#}
+{#            <a href="#">Mon profil</a>#}
+{#            <a href="#">Se déconnecter</a>#}
+{#        </div>#}
 
-        <div style="margin-bottom: 20px;">
-            <strong>Date du jour :</strong> {{ "now"|date("d/m/Y") }}<br>
-            <strong>Participant :</strong> Jeanine L.
-        </div>
+{#        <div class="admin-alert">#}
+{#            Le lien Administration est accessible uniquement en tant qu'administrateur.#}
+{#        </div>#}
+
+{#        <div style="margin-bottom: 20px;">#}
+{#            <strong>Date du jour :</strong> {{ "now"|date("d/m/Y") }}<br>#}
+{#            <strong>Participant :</strong> Jeanine L.#}
+{#        </div>#}
 
         <div class="filter-section">
             <div class="filter-column">
@@ -62,5 +62,5 @@
         </table>
 
         <button class="btn-maquette">Créer une sortie</button>
-    </div>
+
 {% endblock %}

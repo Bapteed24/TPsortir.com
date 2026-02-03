@@ -5,8 +5,8 @@
   <title>{% block title %}Sortir{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   {% block stylesheets %}
-        <link rel="stylesheet" href="{{ asset('assets/app.css') }}">
-    {% endblock %}
+      <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+  {% endblock %}
 
     {% block javascripts %}
         <script src="{{ asset('js/app.js') }}"></script>
@@ -15,32 +15,12 @@
 </head>
 
 <body>
-<header class="topbar">
-  <div class="topbar__inner">
-    <div class="brand">
-      <div class="logo-box">LOGO</div>
-      <div class="brand__name">Sortir.com</div>
-    </div>
+<div class="container">
+    {% include '_nav.html.twig' %}
 
-    <div class="topbar__right">
-      <nav class="navlinks" aria-label="Navigation principale">
-        {% if is_granted('ROLE_ADMIN') %}
-          <a href="#">Administration</a> |
-        {% endif %}
-        <a href="{{ path('sortie_list') }}">Accueil</a> |
-        <a href="#">Mon profil</a> |
-        <a href="#">Se déconnecter</a>
-      </nav>
-
-      <div class="user-info">
-        <div>Date du jour : {{ "now"|date("d/m/Y") }}</div>
-        <div>Participant : <strong>{{ participantNom ?? 'Jeannine L.' }}</strong></div>
-      </div>
-    </div>
-  </div>
-</header>
-
-{% block body %}{% endblock %}
+    {% block body %}
+    {% endblock %}
+</div>
 </body>
 
 

@@ -32,8 +32,7 @@ class Sortie
     #[ORM\Column(length: 255)]
     private ?string $infoSortie = null;
 
-    #[ORM\Column(length: 100)]
-    private ?string $etat = null;
+
 
     public function getId(): ?int
     {
@@ -108,18 +107,6 @@ class Sortie
     public function setInfoSortie(string $infoSortie): static
     {
         $this->infoSortie = $infoSortie;
-
-        return $this;
-    }
-
-    public function getEtat(): ?string
-    {
-        return $this->etat;
-    }
-
-    public function setEtat(string $etat): static
-    {
-        $this->etat = $etat;
 
         return $this;
     }

@@ -1,21 +1,21 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Profil - {{ participant.pseudo }}{% endblock %}
+{% block title %}Profil - {{ participant.firstname }} {{ participant.name }}{% endblock %}
 
 {% block body %}
-<main class="container">
-    <p><a href="{{ path('sortie_list') }}">← Retour aux sorties</a></p>
+    <main class="container">
+        <p><a href="{{ path('sortie_list') }}">← Retour aux sorties</a></p>
 
-    <h1>Profil de {{ participant.pseudo }}</h1>
+        <h1>Profil de {{ participant.firstname }} {{ participant.name }}</h1>
 
-    <div class="card">
-        <dl class="dl">
-            <div><dt>Prénom</dt><dd>{{ participant.prenom }}</dd></div>
-            <div><dt>Nom</dt><dd>{{ participant.nom }}</dd></div>
-            <div><dt>Email</dt><dd>{{ participant.email }}</dd></div>
-            <div><dt>Téléphone</dt><dd>{{ participant.telephone }}</dd></div>
-            <div><dt>Campus</dt><dd>{{ participant.campus }}</dd></div>
-        </dl>
-    </div>
-</main>
+        <div class="card">
+            <dl class="dl">
+                <div><dt>Prénom</dt><dd>{{ participant.firstname ?? '-' }}</dd></div>
+                <div><dt>Nom</dt><dd>{{ participant.name ?? '-' }}</dd></div>
+                <div><dt>Email</dt><dd>{{ participant.email ?? '-' }}</dd></div>
+                <div><dt>Téléphone</dt><dd>{{ participant.telephone ?? '-' }}</dd></div>
+                <div><dt>Campus</dt><dd>{{ participant.campus.name ?? participant.campus ?? '-' }}</dd></div>
+            </dl>
+        </div>
+    </main>
 {% endblock %}

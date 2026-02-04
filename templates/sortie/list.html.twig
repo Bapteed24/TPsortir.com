@@ -124,10 +124,12 @@
         </table>
       </div>
 
-      <div class="create-sortie">
-        <a class="btn" href="{{ path('sortie_create') }}">Créer une sortie</a>
-      </div>
-    </section>
 
+         {% if app.user.isAdmin == true %}
+              <div class="create-sortie">
+                  <a class="btn" href="{{ path('sortie_create') }}">Créer une sortie</a>
+              </div>
+         {% endif %}
+    </section>
   </main>
 {% endblock %}

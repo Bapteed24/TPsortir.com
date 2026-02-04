@@ -3,25 +3,29 @@
 namespace App\Form;
 
 use App\Entity\Campus;
-use App\Entity\Sortie;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use App\Entity\User;
-use Doctrine\DBAL\Types\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TelType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+
 
 class ProfileFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('email', TextType::class)
+            ->add('email', EmailType::class)
             ->add('name', TextType::class, [
                 'label' => 'Nom',
                 'required' => false,
             ])
-            ->add('firstname', TextType::class, [
+            ->add('firstname', TelType::class, [
                 'label'=>'Prénom',
                 'required' => false,
             ])
@@ -36,6 +40,7 @@ class ProfileFormType extends AbstractType
                 'label' => 'Nouveau mot de passe (laisser vide si inchangé)',
                 'mapped' => false,
                 'required' => false,
+                'attr' => ['autocomplete' => 'new-password'],
                 'constraints' => [
                     new Length([
                         'min' => 6,

@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Sortie;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Form\SortieFormType;
+use App\Repository\SortieRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -97,7 +100,7 @@ final class AdminController extends AbstractController
         }
 
         // Affichage du formulaire
-        return $this->render('admin/user/create.html.twig', [
+        return $this->render('admin/user/update.html.twig', [
             'registrationForm' => $form->createView(),
         ]);
     }
@@ -116,20 +119,79 @@ final class AdminController extends AbstractController
         return $this->redirectToRoute('app_admin_user_list');
     }
 
-    #[Route('/sortie/ajouter', name: 'app_admin_sortie_create')]
-    public function createSortie(): Response
+
+    #[Route('/sortie/list', name: 'app_admin_sortie_list')]
+    public function listSortie(SortieRepository $sortieRepository): Response
     {
-        return $this->render('admin/index.html.twig', [
-            'controller_name' => 'AdminController',
+        $sorties = $sortieRepository->findAll();
+        return $this->render('admin/sortie/list.html.twig', [
+            'sorties' => $sorties,
         ]);
     }
 
-    #[Route('/sortie/modifier', name: 'app_admin_sortie_update')]
-    public function UpdateSortie(): Response
+    #[Route('/sortie/ajouter', name: 'app_admin_sortie_create')]
+    public function createSortie(
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): Response
     {
-        return $this->render('admin/index.html.twig', [
-            'controller_name' => 'AdminController',
+        $sortie  = new Sortie();
+        // Création du formulaire
+        $form = $this->createForm(SortieFormType::class, $sortie);
+        // Gestion de la requête
+        $form->handleRequest($request);
+        // Soumission + validation
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($sortie);
+            $entityManager->flush();
+
+            // Redirection après inscription
+            return $this->redirectToRoute('app_admin_sortie_list');
+        }
+
+        // Affichage du formulaire
+        return $this->render('admin/sortie/create.html.twig', [
+            'registrationForm' => $form->createView(),
         ]);
     }
+
+    #[Route('/sortie/modifier/{id}', name: 'app_admin_sortie_update')]
+    public function UpdateSortie(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        Sortie $sortie,
+    ): Response
+    {
+        // Création du formulaire
+        $form = $this->createForm(SortieFormType::class, $sortie);
+        // Gestion de la requête
+        $form->handleRequest($request);
+        // Soumission + validation
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($sortie);
+            $entityManager->flush();
+
+            // Redirection après inscription
+            return $this->redirectToRoute('app_admin_sortie_list');
+        }
+
+        // Affichage du formulaire
+        return $this->render('admin/sortie/update.html.twig', [
+            'registrationForm' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/sortie/supprimer/{id}', name: 'app_admin_sortie_delete', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function deleteSortie(
+        EntityManagerInterface $entityManager,
+        Sortie $sortie,
+    ): Response
+    {
+        $entityManager->remove($sortie);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_admin_sortie_list');
+    }
+
 
 }

@@ -3,12 +3,15 @@
 {% block title %}Hello AdminController!{% endblock %}
 
 {% block body %}
+    <h1>Dashboard</h1>
+    <div style="margin-bottom: 40px">
+        <a>Dashboard</a>
+    </div>
+
 
     <div>
-
-{#        <a href="{{ path('adminUserUpdate') }}">Créer un utilisateur</a>#}
         <a href="{{ path('app_admin_user_list') }}">Gérer les utilisateurs</a><br>
-        <a>Gérer les sorties</a>
+        <a href="{{ path('app_admin_sortie_list') }}">Gérer les sorties</a>
     </div>
 
 

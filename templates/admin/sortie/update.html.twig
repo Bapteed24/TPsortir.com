@@ -2,7 +2,6 @@
 
 {% block title %}Hello AdminController!{% endblock %}
 
-
 {% block stylesheets %}
     <style>
         .container {
@@ -21,10 +20,10 @@
             font-family: 'Segoe UI', Arial, sans-serif;
         }
 
-        #registration_form {
+        #sortie_form {
             padding:10px;
         }
-        #registration_form > div {
+        #sortie_form > div {
             display:flex;
             justify-content: space-between;
             margin-bottom: 10px;
@@ -39,11 +38,11 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Création d'utilisateur</h1>
+    <h1>Modification d'une sortie</h1>
     <div style="margin-bottom: 40px">
         <a href="{{ path('app_admin') }}">Dashboard</a><span> / </span>
-        <a href="{{ path('app_admin_sortie_list') }}">Utilisateurs</a><span> / </span>
-        <a>Création</a>
+        <a href="{{ path('app_admin_sortie_list') }}">Sorties</a><span> / </span>
+        <a>Modification</a>
     </div>
 
     <div>
@@ -51,7 +50,7 @@
             <form method="post">
                 {{ form_start(registrationForm) }}
                 {{ form_widget(registrationForm) }}
-                <button type="submit" class="btn">S’inscrire</button>
+                <button type="submit" class="btn">Modifier</button>
                 {{ form_end(registrationForm) }}
             </form>
         </fieldset>

@@ -39,11 +39,11 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Création d'utilisateur</h1>
+    <h1>Modification d'utilisateur</h1>
     <div style="margin-bottom: 40px">
         <a href="{{ path('app_admin') }}">Dashboard</a><span> / </span>
         <a href="{{ path('app_admin_sortie_list') }}">Utilisateurs</a><span> / </span>
-        <a>Création</a>
+        <a>Modification</a>
     </div>
 
     <div>
@@ -51,7 +51,7 @@
             <form method="post">
                 {{ form_start(registrationForm) }}
                 {{ form_widget(registrationForm) }}
-                <button type="submit" class="btn">S’inscrire</button>
+                <button type="submit" class="btn">Modifier</button>
                 {{ form_end(registrationForm) }}
             </form>
         </fieldset>

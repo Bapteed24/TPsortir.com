@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <style>
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .topbar {
+            text-align: right;
+        }
+        body {
+            background-color: #fff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            padding: 20px;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        table th, table td {
+            border:1px solid #0a0a0a;
+            padding:5px;
+            text-align: center;
+        }
+        th {
+            background-color:gray;
+        }
+        .btn {
+            padding:10px;
+            display:inline-block;
+            text-decoration: none;
+            background-color: green;
+            border-radius: 5px;
+            color:white;
+        }
+        .add-div {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div>
+        <h1>Liste des sorties</h1>
+        <div style="margin-bottom: 40px">
+            <a href="{{ path('app_admin') }}">Dashboard</a><span> / </span>
+            <a>Sorties</a>
+        </div>
+
+        <div class="add-div">
+            <a href="{{ path('app_admin_sortie_create') }}" class="btn">Créer un nouvelle sortie</a>
+        </div>
+        <table>
+            <thead>
+                <th>Libellé</th>
+                <th>Date et heure début</th>
+                <th>Durée</th>
+                <th>Date limite inscription</th>
+                <th>Nombre d'inscription max</th>
+                <th></th>
+            </thead>
+            {% for sortie in sorties %}
+                <tr>
+                    <td>{{ sortie.name }}</td>
+                    <td>{{ sortie.dateHeureDebut|date }}</td>
+                    <td>{{ sortie.duree|date("H:i:s") }}</td>
+                    <td>{{ sortie.dateLimiteInscription|date }}</td>
+                    <td>{{ sortie.nbInscriptionMax }}</td>
+                    <td><a href="{{ path('app_admin_sortie_update', {id:sortie.id}) }}">Modifier</a> <a href="{{ path('app_admin_sortie_delete', {id:sortie.id}) }}">Supprimer</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+
+    </div>
+{% endblock %}

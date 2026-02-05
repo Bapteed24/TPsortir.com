@@ -2,18 +2,17 @@
 
 namespace App\Controller;
 
+use App\Entity\Sortie;
+use App\Entity\User;
 use App\Form\SortieFormType;
-use Doctrine\ORM\EntityManager;
+use App\Repository\CampusRepository;
+use App\Repository\SortieRepository;
+use App\Service\EtatSortieService;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Repository\CampusRepository;
-use App\Repository\SortieRepository;
-use App\Entity\Sortie;
-use App\Entity\User;
 
 class SortieController extends AbstractController
 {
@@ -21,13 +20,11 @@ class SortieController extends AbstractController
     public function list(
         Request $request,
         CampusRepository $campusRepository,
-        SortieRepository $sortieRepository
-    ): Response
-    {
-        // 1) campus depuis la DB
+        SortieRepository $sortieRepository,
+        EtatSortieService $etatSortieService
+    ): Response {
         $campusOptions = $campusRepository->findAll();
 
-        // 2) filtres
         $filters = [
             'campus' => $request->query->get('campus', ''),
             'q' => trim((string) $request->query->get('q', '')),
@@ -39,13 +36,18 @@ class SortieController extends AbstractController
             'finished' => (bool) $request->query->get('finished', false),
         ];
 
-        // 3) sorties depuis la DB (simple, on filtre après)
         $sorties = $sortieRepository->findAll();
+
+        // ✅ transitions automatiques d'état
+        foreach ($sorties as $s) {
+            $etatSortieService->appliquerTransitionsAutomatiques($s);
+        }
+        $etatSortieService->flush();
 
         return $this->render('sortie/list.html.twig', [
             'campusOptions' => $campusOptions,
             'filters' => $filters,
-            'participantNom' => $this->getUser()?->getFirstname(), // si ton User/Participant a firstname
+            'participantNom' => $this->getUser()?->getFirstname(),
             'sorties' => $sorties,
         ]);
     }
@@ -59,31 +61,38 @@ class SortieController extends AbstractController
     }
 
     #[Route('/sortie/creer', name: 'sortie_create')]
-    public function create(Request $request, EntityManagerInterface $entityManager): Response
-    {
+    public function create(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        EtatSortieService $etatSortieService
+    ): Response {
         $sortie = new Sortie();
+
         $form = $this->createForm(SortieFormType::class, $sortie, [
             'show_organisateurSortie' => false,
-
         ]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             /** @var User|null $user */
             $user = $this->getUser();
             if (!$user) {
                 throw $this->createAccessDeniedException();
             }
 
-
             $sortie->setOrganisateurSortie($user);
 
-
+            // ✅ organisateur inscrit automatiquement
             $user->addSorty($sortie);
 
-
+            // ✅ Brouillon / Publier (boutons name="action")
+            $action = $request->request->get('action', 'draft');
+            if ($action === 'publish') {
+                $sortie->setEtat($etatSortieService->getEtat('Ouverte'));
+            } else {
+                $sortie->setEtat($etatSortieService->getEtat('En création'));
+            }
 
             $entityManager->persist($sortie);
             $entityManager->flush();
@@ -96,37 +105,44 @@ class SortieController extends AbstractController
         ]);
     }
 
-// ...
-
     #[Route('/sortie/{id}/inscrire', name: 'sortie_inscrire', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function inscrire(Sortie $sortie, EntityManagerInterface $entityManager): Response
-    {
+    public function inscrire(
+        Sortie $sortie,
+        EntityManagerInterface $entityManager,
+        EtatSortieService $etatSortieService
+    ): Response {
         /** @var User|null $user */
         $user = $this->getUser();
         if (!$user) {
             throw $this->createAccessDeniedException();
         }
 
-        // Déjà inscrit ?
+        // ✅ état à jour
+        $etatSortieService->appliquerTransitionsAutomatiques($sortie);
+        $etatSortieService->flush();
+
         if ($user->getSorties()->contains($sortie)) {
             $this->addFlash('info', 'Tu es déjà inscrit à cette sortie.');
             return $this->redirectToRoute('sortie_list');
         }
 
-        // Date limite
+        // ✅ inscription uniquement si Ouverte
+        if ($sortie->getEtat()->getLibelle() !== 'Ouverte') {
+            $this->addFlash('danger', 'Inscription impossible : sortie non ouverte.');
+            return $this->redirectToRoute('sortie_list');
+        }
+
         $now = new \DateTimeImmutable();
         if ($sortie->getDateLimiteInscription() < $now) {
             $this->addFlash('danger', 'La date limite d’inscription est dépassée.');
             return $this->redirectToRoute('sortie_list');
         }
 
-        // Complet
         if ($sortie->getParticipants()->count() >= $sortie->getNbInscriptionMax()) {
             $this->addFlash('danger', 'La sortie est complète.');
             return $this->redirectToRoute('sortie_list');
         }
 
-        // Inscription (owning side)
         $user->addSorty($sortie);
         $entityManager->flush();
 
@@ -135,17 +151,30 @@ class SortieController extends AbstractController
     }
 
     #[Route('/sortie/{id}/desister', name: 'sortie_desister', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function desister(Sortie $sortie, EntityManagerInterface $entityManager): Response
-    {
+    public function desister(
+        Sortie $sortie,
+        EntityManagerInterface $entityManager,
+        EtatSortieService $etatSortieService
+    ): Response {
         /** @var User|null $user */
         $user = $this->getUser();
         if (!$user) {
             throw $this->createAccessDeniedException();
         }
 
-        // Pas inscrit ?
+        // ✅ état à jour
+        $etatSortieService->appliquerTransitionsAutomatiques($sortie);
+        $etatSortieService->flush();
+
         if (!$user->getSorties()->contains($sortie)) {
             $this->addFlash('info', 'Tu n’es pas inscrit à cette sortie.');
+            return $this->redirectToRoute('sortie_list');
+        }
+
+        // ✅ désistement autorisé si Ouverte OU Clôturée
+        $lib = $sortie->getEtat()->getLibelle();
+        if (!in_array($lib, ['Ouverte', 'Clôturée'], true)) {
+            $this->addFlash('danger', 'Désistement impossible pour cet état.');
             return $this->redirectToRoute('sortie_list');
         }
 
@@ -156,4 +185,73 @@ class SortieController extends AbstractController
         return $this->redirectToRoute('sortie_list');
     }
 
+    #[Route('/sortie/{id}/publier', name: 'sortie_publier', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function publier(
+        Sortie $sortie,
+        EntityManagerInterface $entityManager,
+        EtatSortieService $etatSortieService
+    ): Response {
+        /** @var User|null $user */
+        $user = $this->getUser();
+        if (!$user) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $isOrganisateur = $sortie->getOrganisateurSortie()?->getId() === $user->getId();
+        if (!$isOrganisateur && !$user->isAdmin()) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if ($sortie->getEtat()->getLibelle() !== 'En création') {
+            $this->addFlash('info', 'Cette sortie ne peut plus être publiée.');
+            return $this->redirectToRoute('sortie_list');
+        }
+
+        $sortie->setEtat($etatSortieService->getEtat('Ouverte'));
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Sortie publiée ✅');
+        return $this->redirectToRoute('sortie_list');
+    }
+
+    #[Route('/sortie/{id}/annuler', name: 'sortie_annuler', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function annuler(
+        Sortie $sortie,
+        EntityManagerInterface $entityManager,
+        EtatSortieService $etatSortieService
+    ): Response {
+        /** @var User|null $user */
+        $user = $this->getUser();
+        if (!$user) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $isOrganisateur = $sortie->getOrganisateurSortie()?->getId() === $user->getId();
+        if (!$isOrganisateur && !$user->isAdmin()) {
+            throw $this->createAccessDeniedException();
+        }
+
+        // état à jour
+        $etatSortieService->appliquerTransitionsAutomatiques($sortie);
+        $etatSortieService->flush();
+
+        if ($sortie->getEtat()->getLibelle() !== 'Ouverte') {
+            $this->addFlash('danger', 'Annulation impossible : la sortie n’est pas ouverte.');
+            return $this->redirectToRoute('sortie_list');
+        }
+
+        // ✅ annuler seulement si aucun participant autre que l’organisateur
+        foreach ($sortie->getParticipants() as $p) {
+            if ($sortie->getOrganisateurSortie() && $p->getId() !== $sortie->getOrganisateurSortie()->getId()) {
+                $this->addFlash('danger', 'Annulation impossible : des participants sont déjà inscrits.');
+                return $this->redirectToRoute('sortie_list');
+            }
+        }
+
+        $sortie->setEtat($etatSortieService->getEtat('Annulée'));
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Sortie annulée ✅');
+        return $this->redirectToRoute('sortie_list');
+    }
 }

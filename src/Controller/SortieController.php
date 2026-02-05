@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Form\SortieFormType;
+use App\Repository\EtatRepository;
+use DateInterval;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Entity;
@@ -81,4 +83,21 @@ class SortieController extends AbstractController
         ]);
     }
 
+    private function setSortieToHistorisee(
+        SortieRepository $sortieRepository,
+        EtatRepository $etatRepository)
+    {
+        $sorties = $sortieRepository->findAll();
+
+        $now = new \DateTime();
+        foreach ($sorties as $sortie) {
+            $date = $sortie->getDateLimiteInscription();
+            $date->add(new DateInterval('P30D'));
+
+            if ($date < $now) {
+                $history = $etatRepository->find(7);
+                $sortie->setEtat($history);
+            }
+        }
+    }
 }

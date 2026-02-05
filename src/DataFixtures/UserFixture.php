@@ -5,27 +5,34 @@ namespace App\DataFixtures;
 use App\Entity\Campus;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class AppFixtures extends Fixture
+class UserFixture extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
 {
+    public static function getGroups(): array
+    {
+        return ['users'];
+    }
+
     public function __construct(
         private UserPasswordHasherInterface $passwordHasher
     ) {}
 
+    public function getDependencies(): array
+    {
+        return [CampusFixtures::class, VilleFixtures::class];
+
+    }
+
     public function load(ObjectManager $manager): void
     {
 
-        // Campus
-
-        $campus = new Campus();
-        $campus->setName('Nantes');
-        $manager->persist($campus);
-
+        $campus = $this->getReference('Campus1', Campus::class);
 
         // Admin
-
         $admin = new User();
         $admin->setEmail('admin@test.com');
         $admin->setFirstname('Admin');
@@ -43,11 +50,12 @@ class AppFixtures extends Fixture
         $admin->setPassword($hashedPassword);
 
         $manager->persist($admin);
-
+        $this->addReference('User0', $admin);
 
         // Utilisateurs simples
 
         for ($i = 1; $i <= 3; $i++) {
+            $campusI = $this->getReference('Campus'.rand(1,3), Campus::class);
             $user = new User();
             $user->setEmail("user$i@test.com");
             $user->setFirstname("User$i");
@@ -56,8 +64,7 @@ class AppFixtures extends Fixture
             $user->setRoles(['ROLE_USER']);
             $user->setIsActif(true);
             $user->setIsAdmin(false);
-            $user->setCampus($campus);
-
+            $user->setCampus($campusI);
             $hashedPassword = $this->passwordHasher->hashPassword(
                 $user,
                 'password'
@@ -65,6 +72,8 @@ class AppFixtures extends Fixture
             $user->setPassword($hashedPassword);
 
             $manager->persist($user);
+
+            $this->addReference('User'.$i, $user);
         }
 
         $manager->flush();

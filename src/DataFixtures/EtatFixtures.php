@@ -4,10 +4,17 @@ namespace App\DataFixtures;
 
 use App\Entity\Etat;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class EtatFixtures extends Fixture
+class EtatFixtures extends Fixture implements FixtureGroupInterface
 {
+
+    public static function getGroups(): array
+    {
+        return ['users'];
+    }
+
     public function load(ObjectManager $manager): void
     {
         $Etets = [
@@ -26,6 +33,7 @@ class EtatFixtures extends Fixture
             $etat->setId(intval($keys));
             $etat->setLibelle($e);
             $manager->persist($etat);
+            $this->addReference('etat'.$keys, $etat);
         }
 
         $manager->flush();

@@ -39,13 +39,15 @@ class SortieController extends AbstractController
             'finished' => (bool) $request->query->get('finished', false),
         ];
 
-        // 3) sorties depuis la DB (simple, on filtre après)
-        $sorties = $sortieRepository->findAll();
+
+        $sorties = $sortieRepository->findBy(
+            !empty($filters['campus']) ? ['campus' => $filters['campus']] : []
+        );
 
         return $this->render('sortie/list.html.twig', [
             'campusOptions' => $campusOptions,
             'filters' => $filters,
-            'participantNom' => $this->getUser()?->getFirstname(), // si ton User/Participant a firstname
+            'participantNom' => $this->getUser()?->getFirstname(),
             'sorties' => $sorties,
         ]);
     }

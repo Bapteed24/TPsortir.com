@@ -49,13 +49,15 @@
 {% block body %}
 <div>
     <h1>Liste des utilisateurs</h1>
-    <div style="margin-bottom: 40px">
-        <a href="{{ path('app_admin') }}">Dashboard</a><span> / </span>
-        <a>Utilisateurs</a>
-    </div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('app_admin') }}">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Utilisateurs</li>
+        </ol>
+    </nav>
 
     <div class="add-div">
-        <a href="{{ path('app_admin_user_create') }}" class="btn">Créer un nouvelle utilisateur</a>
+        <a href="{{ path('app_admin_user_create') }}" class="btn btn-secondary">Créer un nouvelle utilisateur</a>
     </div>
     <table>
         <thead>
@@ -71,8 +73,8 @@
                     <td>{{ user.name}}</td>
                     <td>{{ user.firstname}}</td>
                     <td>
-                        <a href="{{ path('adminUserUpdate', {id: user.id}) }}">Modifier</a>
-                        <a href="{{ path('adminUserDelete', {id: user.id}) }}" onclick="return confirm('Action irréversible. Etes-vous sur ?')">Supprimer</a>
+                        <a href="{{ path('adminUserUpdate', {id: user.id}) }}" class="btn btn-primary">Modifier</a>
+                        <a href="{{ path('adminUserDelete', {id: user.id}) }}" onclick="return confirm('Action irréversible. Etes-vous sur ?')" class="btn btn-danger">Supprimer</a>
                     </td>
                 </tr>
             {% endfor  %}

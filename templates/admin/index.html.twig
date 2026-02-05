@@ -4,15 +4,16 @@
 
 {% block body %}
     <h1>Dashboard</h1>
-    <div style="margin-bottom: 40px">
-        <a>Dashboard</a>
-    </div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active" aria-current="page">DashBoard</li>
+        </ol>
+    </nav>
 
 
     <div>
         <a href="{{ path('app_admin_user_list') }}">Gérer les utilisateurs</a><br>
         <a href="{{ path('app_admin_sortie_list') }}">Gérer les sorties</a>
     </div>
-
 
 {% endblock %}

@@ -255,6 +255,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->sorties->contains($sorty)) {
             $this->sorties->add($sorty);
+
+            // sync inverse side
+            if (!$sorty->getParticipants()->contains($this)) {
+                $sorty->getParticipants()->add($this); // ou $sorty->addParticipant($this) (mais attention recursion)
+            }
         }
 
         return $this;
@@ -262,8 +267,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeSorty(Sortie $sorty): static
     {
-        $this->sorties->removeElement($sorty);
+        if ($this->sorties->removeElement($sorty)) {
+            // sync inverse side
+            if ($sorty->getParticipants()->contains($this)) {
+                $sorty->getParticipants()->removeElement($this); // ou $sorty->removeParticipant($this) (attention recursion)
+            }
+        }
 
         return $this;
+    }
+
+    public function getFullname(): ?string
+    {
+        return $this->name . ' ' . $this->firstname;
     }
 }

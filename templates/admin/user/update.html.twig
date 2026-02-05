@@ -21,39 +21,28 @@
             font-family: 'Segoe UI', Arial, sans-serif;
         }
 
-        #registration_form {
-            padding:10px;
-        }
-        #registration_form > div {
-            display:flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        form {
-            text-align: center;
-        }
-        .btn {
-            padding:10px;
+        form .btn {
+            display:block;
+            margin:0 auto;
         }
     </style>
 {% endblock %}
 
 {% block body %}
     <h1>Modification d'utilisateur</h1>
-    <div style="margin-bottom: 40px">
-        <a href="{{ path('app_admin') }}">Dashboard</a><span> / </span>
-        <a href="{{ path('app_admin_sortie_list') }}">Utilisateurs</a><span> / </span>
-        <a>Modification</a>
-    </div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('app_admin') }}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ path('app_admin_user_list') }}">Utilisateurs</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Modifier</li>
+        </ol>
+    </nav>
 
     <div>
-        <fieldset>
-            <form method="post">
-                {{ form_start(registrationForm) }}
-                {{ form_widget(registrationForm) }}
-                <button type="submit" class="btn">Modifier</button>
-                {{ form_end(registrationForm) }}
-            </form>
-        </fieldset>
+        {% form_theme registrationForm 'bootstrap_5_layout.html.twig' %}
+        {{ form_start(registrationForm) }}
+        {{ form_widget(registrationForm) }}
+        <button type="submit" class="btn btn-success">S’inscrire</button>
+        {{ form_end(registrationForm) }}
     </div>
 {% endblock %}

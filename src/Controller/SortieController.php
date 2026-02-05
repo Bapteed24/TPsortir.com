@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use App\Repository\CampusRepository;
 use App\Repository\SortieRepository;
 use App\Entity\Sortie;
-
+use App\Entity\User;
 
 class SortieController extends AbstractController
 {
@@ -64,19 +64,98 @@ class SortieController extends AbstractController
     public function create(Request $request, EntityManagerInterface $entityManager): Response
     {
         $sortie = new Sortie();
-        $form = $this->createForm(SortieFormType::class, $sortie);
+        $form = $this->createForm(SortieFormType::class, $sortie, [
+            'show_organisateurSortie' => false,
+
+        ]);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            /** @var User|null $user */
+            $user = $this->getUser();
+            if (!$user) {
+                throw $this->createAccessDeniedException();
+            }
+
+
+            $sortie->setOrganisateurSortie($user);
+
+
+            $user->addSorty($sortie);
+
+
+
             $entityManager->persist($sortie);
             $entityManager->flush();
 
-            // Redirection après inscription
             return $this->redirectToRoute('sortie_list');
         }
+
         return $this->render('sortie/create.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+// ...
+
+    #[Route('/sortie/{id}/inscrire', name: 'sortie_inscrire', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function inscrire(Sortie $sortie, EntityManagerInterface $entityManager): Response
+    {
+        /** @var User|null $user */
+        $user = $this->getUser();
+        if (!$user) {
+            throw $this->createAccessDeniedException();
+        }
+
+        // Déjà inscrit ?
+        if ($user->getSorties()->contains($sortie)) {
+            $this->addFlash('info', 'Tu es déjà inscrit à cette sortie.');
+            return $this->redirectToRoute('sortie_list');
+        }
+
+        // Date limite
+        $now = new \DateTimeImmutable();
+        if ($sortie->getDateLimiteInscription() < $now) {
+            $this->addFlash('danger', 'La date limite d’inscription est dépassée.');
+            return $this->redirectToRoute('sortie_list');
+        }
+
+        // Complet
+        if ($sortie->getParticipants()->count() >= $sortie->getNbInscriptionMax()) {
+            $this->addFlash('danger', 'La sortie est complète.');
+            return $this->redirectToRoute('sortie_list');
+        }
+
+        // Inscription (owning side)
+        $user->addSorty($sortie);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Inscription effectuée ✅');
+        return $this->redirectToRoute('sortie_list');
+    }
+
+    #[Route('/sortie/{id}/desister', name: 'sortie_desister', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function desister(Sortie $sortie, EntityManagerInterface $entityManager): Response
+    {
+        /** @var User|null $user */
+        $user = $this->getUser();
+        if (!$user) {
+            throw $this->createAccessDeniedException();
+        }
+
+        // Pas inscrit ?
+        if (!$user->getSorties()->contains($sortie)) {
+            $this->addFlash('info', 'Tu n’es pas inscrit à cette sortie.');
+            return $this->redirectToRoute('sortie_list');
+        }
+
+        $user->removeSorty($sortie);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Désinscription effectuée ✅');
+        return $this->redirectToRoute('sortie_list');
     }
 
 }

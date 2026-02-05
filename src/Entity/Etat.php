@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Etat
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
@@ -27,6 +26,11 @@ class Etat
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
+    }
+
+    public function setId($id)
+    {
+        $this->id = $id;
     }
 
     public function getId(): ?int

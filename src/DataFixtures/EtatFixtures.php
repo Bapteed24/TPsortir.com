@@ -11,17 +11,19 @@ class EtatFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $Etets = [
-            'En création',
-            'Ouverte',
-            'Clôturée',
-            'En cours',
-            'Terminée',
-            'Annulée',
-            'Historisée'
+            1 => 'En création',
+            2 => 'Ouverte',
+            3 => 'Clôturée',
+            4 => 'En cours',
+            5 => 'Terminée',
+            6 => 'Annulée',
+            7 => 'Historisée'
         ];
 
-        foreach ($Etets as $e) {
+        foreach ($Etets as $keys => $e) {
+//            dd($keys);
             $etat = new Etat();
+            $etat->setId(intval($keys));
             $etat->setLibelle($e);
             $manager->persist($etat);
         }

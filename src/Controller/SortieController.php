@@ -23,7 +23,9 @@ class SortieController extends AbstractController
         SortieRepository $sortieRepository,
         EtatSortieService $etatSortieService
     ): Response {
+
         $campusOptions = $campusRepository->findAll();
+
 
         $filters = [
             'campus' => $request->query->get('campus', ''),
@@ -36,13 +38,61 @@ class SortieController extends AbstractController
             'finished' => (bool) $request->query->get('finished', false),
         ];
 
-        $sorties = $sortieRepository->findAll();
+
+        $allSorties = $sortieRepository->findBy([], ['dateHeureDebut' => 'DESC']);
 
 
-        foreach ($sorties as $s) {
+        foreach ($allSorties as $s) {
             $etatSortieService->appliquerTransitionsAutomatiques($s);
         }
         $etatSortieService->flush();
+
+
+        $user = $this->getUser();
+
+        $sorties = array_filter($allSorties, function ($sortie) use ($filters, $user) {
+
+            if (!empty($filters['campus']) && $sortie->getCampus()->getId() != $filters['campus']) {
+                return false;
+            }
+
+
+            if (!empty($filters['q']) && stripos($sortie->getName(), $filters['q']) === false) {
+                return false;
+            }
+
+
+            if (!empty($filters['from']) && $sortie->getDateHeureDebut() < new \DateTime($filters['from'])) {
+                return false;
+            }
+            if (!empty($filters['to']) && $sortie->getDateHeureDebut() > new \DateTime($filters['to'] . ' 23:59:59')) {
+                return false;
+            }
+
+
+            if ($user) {
+
+                if ($filters['mine'] && $sortie->getOrganisateurSortie() !== $user) {
+                    return false;
+                }
+
+
+                if ($filters['registered'] && !$sortie->getParticipants()->contains($user)) {
+                    return false;
+                }
+
+
+                if ($filters['not_registered'] && $sortie->getParticipants()->contains($user)) {
+                    return false;
+                }
+            }
+
+            if ($filters['finished'] && $sortie->getEtat()->getLibelle() !== 'Passée') {
+                return false;
+            }
+
+            return true;
+        });
 
         return $this->render('sortie/list.html.twig', [
             'campusOptions' => $campusOptions,
@@ -82,10 +132,7 @@ class SortieController extends AbstractController
             }
 
             $sortie->setOrganisateurSortie($user);
-
-
             $user->addSorty($sortie);
-
 
             $action = $request->request->get('action', 'draft');
             if ($action === 'publish') {
@@ -117,7 +164,6 @@ class SortieController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-
         $etatSortieService->appliquerTransitionsAutomatiques($sortie);
         $etatSortieService->flush();
 
@@ -126,7 +172,6 @@ class SortieController extends AbstractController
             return $this->redirectToRoute('sortie_list');
         }
 
-        // ✅ inscription uniquement si Ouverte
         if ($sortie->getEtat()->getLibelle() !== 'Ouverte') {
             $this->addFlash('danger', 'Inscription impossible : sortie non ouverte.');
             return $this->redirectToRoute('sortie_list');
@@ -162,7 +207,6 @@ class SortieController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-
         $etatSortieService->appliquerTransitionsAutomatiques($sortie);
         $etatSortieService->flush();
 
@@ -170,7 +214,6 @@ class SortieController extends AbstractController
             $this->addFlash('info', 'Tu n’es pas inscrit à cette sortie.');
             return $this->redirectToRoute('sortie_list');
         }
-
 
         $lib = $sortie->getEtat()->getLibelle();
         if (!in_array($lib, ['Ouverte', 'Clôturée'], true)) {
@@ -231,7 +274,6 @@ class SortieController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        // état à jour
         $etatSortieService->appliquerTransitionsAutomatiques($sortie);
         $etatSortieService->flush();
 
@@ -239,7 +281,6 @@ class SortieController extends AbstractController
             $this->addFlash('danger', 'Annulation impossible : la sortie n’est pas ouverte.');
             return $this->redirectToRoute('sortie_list');
         }
-
 
         foreach ($sortie->getParticipants() as $p) {
             if ($sortie->getOrganisateurSortie() && $p->getId() !== $sortie->getOrganisateurSortie()->getId()) {

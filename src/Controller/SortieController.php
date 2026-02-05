@@ -2,6 +2,10 @@
 
 namespace App\Controller;
 
+use App\Form\SortieFormType;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,15 +58,23 @@ class SortieController extends AbstractController
         ]);
     }
 
-    #[Route('/sortie/creer', name: 'sortie_create', methods: ['GET'])]
-    public function create(): Response
+    #[Route('/sortie/creer', name: 'sortie_create')]
+    public function create(Request $request, EntityManagerInterface $entityManager): Response
     {
+        $sortie = new Sortie();
+        $form = $this->createForm(SortieFormType::class, $sortie);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($sortie);
+            $entityManager->flush();
+
+            // Redirection après inscription
+            return $this->redirectToRoute('sortie_list');
+        }
         return $this->render('sortie/create.html.twig', [
-            'campus' => 'CHARTRES DE BRETAGNE',
-            'lieux' => [
-                ['id' => 1, 'nom' => 'Pub Murdock'],
-                ['id' => 2, 'nom' => 'Parc du Thabor'],
-            ],
+            'form' => $form->createView(),
         ]);
     }
+
 }

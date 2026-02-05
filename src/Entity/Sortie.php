@@ -106,8 +106,7 @@ class Sortie
         if (!$this->participants->contains($participant)) {
             $this->participants->add($participant);
 
-            // IMPORTANT: appelle la méthode User correspondante
-            // Si tu renommes côté User -> addSortie(), remplace ici aussi
+
             $participant->addSorty($this);
         }
         return $this;

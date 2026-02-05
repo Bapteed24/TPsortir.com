@@ -83,8 +83,18 @@
           {% for s in sorties %}
             {% set isIn = app.user and (app.user in s.participants) %}
 
+            {% set etat = s.etat.libelle %}
+
+            {% set isFull = s.participants|length >= s.nbInscriptionMax %}
+            {% set isOrganisateur = app.user and s.organisateurSortie and (app.user.id == s.organisateurSortie.id) %}
+            {% set canPublish = isOrganisateur or (app.user and app.user.isAdmin) %}
+
             <tr>
-              <td>{{ s.name }}</td>
+              <td>
+                <a href="{{ path('sortie_detail', {id: s.id}) }}">
+                  {{ s.name }}
+                </a>
+              </td>
               <td>{{ s.dateHeureDebut ? s.dateHeureDebut|date('d/m/Y H:i') : '' }}</td>
               <td>{{ s.dateLimiteInscription ? s.dateLimiteInscription|date('d/m/Y') : '' }}</td>
               <td>{{ s.participants|length }}/{{ s.nbInscriptionMax }}</td>
@@ -105,17 +115,43 @@
 
 
               <td>
-                <a href="{{ path('sortie_detail', {id: s.id}) }}">Afficher</a>
+
 
                 {% if app.user %}
-                  {% if isIn %}
-                    <a class="action-link" href="{{ path('sortie_desister', {id: s.id}) }}">Se désister</a>
-                  {% else %}
-                    <a class="action-link" href="{{ path('sortie_inscrire', {id: s.id}) }}">S'inscrire</a>
+
+                  {% if etat == 'En création' and canPublish %}
+                    <a class="action-link" href="{{ path('sortie_publier', {id: s.id}) }}">Publier</a>
+                  {% endif %}
+
+
+                  {% if etat == 'Ouverte' %}
+                    {% if isIn %}
+                      <a class="action-link" href="{{ path('sortie_desister', {id: s.id}) }}">Se désister</a>
+                    {% elseif not isFull %}
+                      <a class="action-link" href="{{ path('sortie_inscrire', {id: s.id}) }}">S'inscrire</a>
+                    {% endif %}
                   {% endif %}
                 {% endif %}
-              </td>
+                {% set etat = s.etat.libelle %}
+                {% set isOrganisateur = app.user and s.organisateurSortie and (app.user.id == s.organisateurSortie.id) %}
+                {% set canManage = isOrganisateur or (app.user and app.user.isAdmin) %}
 
+
+                {% set othersCount = 0 %}
+                {% for p in s.participants %}
+                  {% if s.organisateurSortie and p.id != s.organisateurSortie.id %}
+                    {% set othersCount = othersCount + 1 %}
+                  {% endif %}
+                {% endfor %}
+
+                {# ... #}
+
+                {% if app.user and canManage and etat == 'Ouverte' and othersCount == 0 %}
+                  <a class="action-link" href="{{ path('sortie_annuler', {id: s.id}) }}">Annuler</a>
+                {% endif %}
+
+
+              </td>
 
             </tr>
           {% else %}

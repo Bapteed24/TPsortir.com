@@ -40,10 +40,10 @@ class SortieFormType extends AbstractType
                 'class' => Lieu::class,
                 'choice_label' => 'name',
             ])
-            ->add('etat', EntityType::class, [
-                'class' => Etat::class,
-                'choice_label' => 'libelle',
-            ])
+            //->add('etat', EntityType::class, [
+            //    'class' => Etat::class,
+            //   'choice_label' => 'libelle',
+            //])
         ;
 
         if ($options['show_organisateurSortie']) {

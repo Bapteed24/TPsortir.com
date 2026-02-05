@@ -1,7 +1,14 @@
-<form method="post">
     {{ form_start(form) }}
     {{ form_widget(form) }}
-    <button type="submit" class="btn">Créer</button>
+    <div class="form-actions">
+        <button type="submit" name="action" value="draft" class="btn">
+            Enregistrer le brouillopn
+        </button>
+        <button type="submit" name="action" value="publish" class="btn btn-primary">
+            Publier
+        </button>
+
+    </div>
+
     {{ form_end(form) }}
     {{dump()}}
-</form>

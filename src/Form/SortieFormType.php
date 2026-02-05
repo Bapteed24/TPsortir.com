@@ -34,23 +34,23 @@ class SortieFormType extends AbstractType
             ->add('infoSortie')
             ->add('campus', EntityType::class, [
                 'class' => Campus::class,
-                'choice_label' => 'id',
+                'choice_label' => 'name',
             ])
             ->add('lieu', EntityType::class, [
                 'class' => Lieu::class,
-                'choice_label' => 'id',
+                'choice_label' => 'name',
             ])
             ->add('etat', EntityType::class, [
                 'class' => Etat::class,
-                'choice_label' => 'id',
+                'choice_label' => 'libelle',
             ])
             ->add('organisateurSortie', EntityType::class, [
                 'class' => User::class,
-                'choice_label' => 'id',
+                'choice_label' => 'fullname',
             ])
             ->add('participants', EntityType::class, [
                 'class' => User::class,
-                'choice_label' => 'id',
+                'choice_label' => 'fullname',
                 'multiple' => true,
             ])
         ;

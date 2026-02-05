@@ -135,6 +135,7 @@ final class AdminController extends AbstractController
         EntityManagerInterface $entityManager
     ): Response
     {
+//        $user = $this->getUser();
         $sortie  = new Sortie();
         // Création du formulaire
         $form = $this->createForm(SortieFormType::class, $sortie);
@@ -142,6 +143,7 @@ final class AdminController extends AbstractController
         $form->handleRequest($request);
         // Soumission + validation
         if ($form->isSubmitted() && $form->isValid()) {
+//            $sortie->setOrganisateurSortie($user);
             $entityManager->persist($sortie);
             $entityManager->flush();
 
@@ -151,7 +153,7 @@ final class AdminController extends AbstractController
 
         // Affichage du formulaire
         return $this->render('admin/sortie/create.html.twig', [
-            'registrationForm' => $form->createView(),
+            'form' => $form->createView(),
         ]);
     }
 
@@ -177,7 +179,7 @@ final class AdminController extends AbstractController
 
         // Affichage du formulaire
         return $this->render('admin/sortie/update.html.twig', [
-            'registrationForm' => $form->createView(),
+            'form' => $form->createView(),
         ]);
     }
 

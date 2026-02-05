@@ -44,17 +44,13 @@ class SortieFormType extends AbstractType
                 'class' => Etat::class,
                 'choice_label' => 'libelle',
             ])
-            ->add('participants', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'fullname',
-                'multiple' => true,
-            ])
         ;
 
         if ($options['show_organisateurSortie']) {
             $builder->add('organisateurSortie', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => 'fullname',
+
             ]);
         }
     }
@@ -63,7 +59,8 @@ class SortieFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Sortie::class,
-            'show_organisateurSortie' => true,
+            'show_organisateurSortie' => false,
+
         ]);
     }
 }

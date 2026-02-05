@@ -62,10 +62,14 @@ class SortieController extends AbstractController
     public function create(Request $request, EntityManagerInterface $entityManager): Response
     {
         $sortie = new Sortie();
-        $form = $this->createForm(SortieFormType::class, $sortie);
+        $form = $this->createForm(SortieFormType::class, $sortie, [
+            'show_organisateurSortie' => false, // champ absent sur cette page
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $user = $this->getUser();
+            $sortie->setOrganisateurSortie($user);
             $entityManager->persist($sortie);
             $entityManager->flush();
 

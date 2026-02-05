@@ -97,7 +97,7 @@
               <td>
                 {% if s.organisateurSortie %}
                   <a href="{{ path('participant_show', {id: s.organisateurSortie.id}) }}">
-                    {{ s.organisateurSortie.pseudo ?? s.organisateurSortie.name ?? 'Organisateur' }}
+                    {{ s.organisateurSortie.name ?? s.organisateurSortie.name ?? 'Organisateur' }}
                   </a>
                 {% endif %}
               </td>

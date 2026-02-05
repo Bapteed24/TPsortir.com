@@ -38,7 +38,7 @@ class SortieController extends AbstractController
 
         $sorties = $sortieRepository->findAll();
 
-        // ✅ transitions automatiques d'état
+
         foreach ($sorties as $s) {
             $etatSortieService->appliquerTransitionsAutomatiques($s);
         }
@@ -83,10 +83,10 @@ class SortieController extends AbstractController
 
             $sortie->setOrganisateurSortie($user);
 
-            // ✅ organisateur inscrit automatiquement
+
             $user->addSorty($sortie);
 
-            // ✅ Brouillon / Publier (boutons name="action")
+
             $action = $request->request->get('action', 'draft');
             if ($action === 'publish') {
                 $sortie->setEtat($etatSortieService->getEtat('Ouverte'));
@@ -117,7 +117,7 @@ class SortieController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        // ✅ état à jour
+
         $etatSortieService->appliquerTransitionsAutomatiques($sortie);
         $etatSortieService->flush();
 
@@ -162,7 +162,7 @@ class SortieController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        // ✅ état à jour
+
         $etatSortieService->appliquerTransitionsAutomatiques($sortie);
         $etatSortieService->flush();
 
@@ -171,7 +171,7 @@ class SortieController extends AbstractController
             return $this->redirectToRoute('sortie_list');
         }
 
-        // ✅ désistement autorisé si Ouverte OU Clôturée
+
         $lib = $sortie->getEtat()->getLibelle();
         if (!in_array($lib, ['Ouverte', 'Clôturée'], true)) {
             $this->addFlash('danger', 'Désistement impossible pour cet état.');
@@ -240,7 +240,7 @@ class SortieController extends AbstractController
             return $this->redirectToRoute('sortie_list');
         }
 
-        // ✅ annuler seulement si aucun participant autre que l’organisateur
+
         foreach ($sortie->getParticipants() as $p) {
             if ($sortie->getOrganisateurSortie() && $p->getId() !== $sortie->getOrganisateurSortie()->getId()) {
                 $this->addFlash('danger', 'Annulation impossible : des participants sont déjà inscrits.');

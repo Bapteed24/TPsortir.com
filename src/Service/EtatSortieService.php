@@ -72,7 +72,12 @@ class EtatSortieService
             }
         }
 
-        // Terminée -> Historisée ( NEAL s'en occupe)
+        $etatActuel = $sortie->getEtat()->getLibelle();
+        if ($etatActuel === 'Terminée') {
+            $dateHistorisation = $sortie->getDateHeureDebut()->modify('+1 month');
+            if ($now >= $dateHistorisation) {
+                $sortie->setEtat($this->getEtat('Historisée'));
+            }}
 
     }
 

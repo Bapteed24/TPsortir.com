@@ -2,6 +2,9 @@
 
 namespace App\Security;
 
+use App\Entity\User;
+use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,25 +25,40 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
 
     public const LOGIN_ROUTE = 'app_login';
 
-    public function __construct(private UrlGeneratorInterface $urlGenerator)
+    public function __construct(private UrlGeneratorInterface $urlGenerator, UserRepository $userRepository)
     {
+        $this->userRepository = $userRepository;
     }
 
     public function authenticate(Request $request): Passport
     {
-        $email = $request->getPayload()->getString('email');
 
-
-        $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);
+        $login = $request->request->get('login', '');
+//        if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
+//            $email = $login;
+//        } else {
+//
+//        }
 
         return new Passport(
-            new UserBadge($email),
-            new PasswordCredentials($request->getPayload()->getString('password')),
-            [
-                new CsrfTokenBadge('authenticate', $request->getPayload()->getString('_csrf_token')),
-                new RememberMeBadge(),
-            ]
+            new UserBadge($login, function ($userIdentifier) {
+                return $this->userRepository->findOneByEmailOrUsername($userIdentifier);
+            }),
+            new PasswordCredentials($request->request->get('password', ''))
         );
+
+//        $email = $request->getPayload()->getString('email');
+//        $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);
+
+
+//        return new Passport(
+//            new UserBadge($email),
+//            new PasswordCredentials($request->getPayload()->getString('password')),
+//            [
+//                new CsrfTokenBadge('authenticate', $request->getPayload()->getString('_csrf_token')),
+//                new RememberMeBadge(),
+//            ]
+//        );
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response

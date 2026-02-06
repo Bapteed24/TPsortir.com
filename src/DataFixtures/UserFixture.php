@@ -36,6 +36,7 @@ class UserFixture extends Fixture implements FixtureGroupInterface, DependentFix
         $admin = new User();
         $admin->setEmail('admin@test.com');
         $admin->setFirstname('Admin');
+        $admin->setUsername('Admin');
         $admin->setName('Principal');
         $admin->setTelephone('0600000000');
         $admin->setRoles(['ROLE_ADMIN']);
@@ -58,9 +59,9 @@ class UserFixture extends Fixture implements FixtureGroupInterface, DependentFix
             $campusI = $this->getReference('Campus'.rand(1,3), Campus::class);
             $user = new User();
             $user->setEmail("user$i@test.com");
+            $user->setUsername("user$i");
             $user->setFirstname("User$i");
             $user->setName("Test");
-
 
             $phone = '06'.str_pad(rand(1, 99999999),0, STR_PAD_LEFT);
             $user->setTelephone($phone);

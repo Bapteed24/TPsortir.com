@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier sortie{% endblock %}
+
+{% block body %}
+<h1>Modifier sortie</h1>
+
+{{ form_start(form) }}
+    {{ form_widget(form) }}
+
+    <button name="action" value="save">Enregistrer</button>
+    <button name="action" value="publish">Publier</button>
+    <button name="action" value="delete">Supprimer</button>
+
+{{ form_end(form) }}
+{% endblock %}

@@ -6,6 +6,19 @@
   <main class="container">
     <h1 class="page-title">Afficher une sortie</h1>
 
+    {% if app.user
+    and sortie.etat.libelle == 'En création'
+    and (
+        sortie.organisateurSortie.id == app.user.id
+        or app.user.isAdmin()
+    )
+%}
+    <a class="btn btn-warning" href="{{ path('sortie_modifier', {id: sortie.id}) }}">
+        Modifier
+    </a>
+{% endif %}
+
+
     <section class="card sortie-detail">
       <div class="sortie-detail__cols">
         <div class="sortie-detail__col">

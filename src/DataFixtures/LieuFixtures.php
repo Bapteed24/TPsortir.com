@@ -2,6 +2,8 @@
 
 namespace App\DataFixtures;
 
+
+use Faker\Factory;
 use App\Entity\Campus;
 use App\Entity\Etat;
 use App\Entity\Lieu;

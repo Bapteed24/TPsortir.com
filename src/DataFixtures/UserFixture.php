@@ -54,13 +54,16 @@ class UserFixture extends Fixture implements FixtureGroupInterface, DependentFix
 
         // Utilisateurs simples
 
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i <= 30; $i++) {
             $campusI = $this->getReference('Campus'.rand(1,3), Campus::class);
             $user = new User();
             $user->setEmail("user$i@test.com");
             $user->setFirstname("User$i");
             $user->setName("Test");
-            $user->setTelephone("061111111$i");
+
+
+            $phone = '06'.str_pad(rand(1, 99999999),0, STR_PAD_LEFT);
+            $user->setTelephone($phone);
             $user->setRoles(['ROLE_USER']);
             $user->setIsActif(true);
             $user->setIsAdmin(false);

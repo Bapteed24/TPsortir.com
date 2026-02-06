@@ -34,6 +34,7 @@ class SortieFixtures extends Fixture implements FixtureGroupInterface, Dependent
     public function load(ObjectManager $manager): void
     {
 
+        ini_set('memory_limit', -1);
         $faker = \Faker\Factory::create('fr_FR');
 
         for ($i = 1; $i <= 30; $i++) {
@@ -53,9 +54,19 @@ class SortieFixtures extends Fixture implements FixtureGroupInterface, Dependent
             $sortie->setCampus($campus);
             $lieu = $this->getReference('lieu1', Lieu::class);
             $sortie->setLieu($lieu);
+
             $etat = $this->getReference('etat'.rand(1,7), Etat::class);
             $sortie->setEtat($etat);
-            $user = $this->getReference('User'.rand(0,3), User::class);
+            $user = $this->getReference('User'.rand(0,30), User::class);
+            $sortie->addParticipant($user);
+
+            // itération à 9 car organisateur déja ajouté
+            for ($j = 1; $j <= 9; $j++) {
+                $participant = $this->getReference('User'.rand(0,30), User::class);
+                // notre function gère déja les doublons, donc pas besoin de control
+                $sortie->addParticipant($participant);
+            }
+
             $sortie->setOrganisateurSortie($user);
 
             $manager->persist($sortie);

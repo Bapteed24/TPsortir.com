@@ -75,6 +75,7 @@
             <th>État</th>
             <th>Inscrit</th>
             <th>Organisateur</th>
+              <th>Participants</th>
             <th>Actions</th>
           </tr>
           </thead>
@@ -111,7 +112,12 @@
                   </a>
                 {% endif %}
               </td>
-
+                <td>
+                    {% set participants = s.participants.toArray %}
+                    {% for p in participants %}
+                        <a href="{{ path('participant_show', {id: p.id}) }}">{{ p.username }}</a>
+                    {% endfor %}
+                </td>
 
 
               <td>

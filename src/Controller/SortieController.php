@@ -30,6 +30,8 @@ class SortieController extends AbstractController
             return $this->redirectToRoute('sortie_innactif');
         }
 
+
+
         $campusOptions = $campusRepository->findAll();
         $defaultCampus = ($user && $user->getCampus()) ? $user->getCampus()->getId() : '';
 
@@ -46,8 +48,11 @@ class SortieController extends AbstractController
         ];
 
 
-        $allSorties = $sortieRepository->findBy([], ['dateHeureDebut' => 'DESC']);
 
+
+//        $allSorties = $sortieRepository->findBy([], ['dateHeureDebut' => 'DESC']);
+        $allSorties = $sortieRepository->listAccueil($user);
+//        dump($allSorties);die;
 
         foreach ($allSorties as $s) {
             $etatSortieService->appliquerTransitionsAutomatiques($s);

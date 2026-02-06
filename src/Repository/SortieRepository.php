@@ -40,4 +40,40 @@ class SortieRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+        /**
+         * @return Sortie[] Returns an array of Sortie objects
+         */
+        public function listAccueil($user): array
+        {
+
+            $query = $this->createQueryBuilder('s');
+
+            $query->where('s.etat != :etat or s.organisateurSortie = :organisateurSortie')
+                  ->setParameter('etat', 1)
+                  ->setParameter('organisateurSortie', $user);
+
+            $now = new \DateTime();
+
+            $now->modify('-30 day');
+            $query->andWhere('s.dateHeureDebut > :now')
+                    ->setParameter('now', $now);
+
+
+//            $query->andWhere('s.name LIKE :name')
+//                   ->setParameter('name', '%2%');
+            
+            return $query->getQuery()->getResult();
+//                ->getResult()
+//            return $this->createQueryBuilder('s')
+//                ->andWhere('s.exampleField = :val')
+//                ->setParameter('val', $value)
+//                ->orderBy('s.id', 'ASC')
+//                ->setMaxResults(10)
+//                ->getQuery()
+//                ->getResult()
+//            ;
+        }
+
+
 }

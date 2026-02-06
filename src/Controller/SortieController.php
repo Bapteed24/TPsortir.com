@@ -24,6 +24,11 @@ class SortieController extends AbstractController
         EtatSortieService $etatSortieService
     ): Response {
 
+        $user = $this->getUser();
+        if ($user->isActif() === false) {
+            return $this->redirectToRoute('sortie_innactif');
+        }
+
         $campusOptions = $campusRepository->findAll();
 
 
@@ -105,6 +110,11 @@ class SortieController extends AbstractController
     #[Route('/sortie/{id}', name: 'sortie_detail', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function detail(Sortie $sortie): Response
     {
+        $user = $this->getUser();
+        if ($user->isActif() === false) {
+            return $this->redirectToRoute('sortie_innactif');
+        }
+
         return $this->render('sortie/detail.html.twig', [
             'sortie' => $sortie,
         ]);
@@ -116,6 +126,12 @@ class SortieController extends AbstractController
         EntityManagerInterface $entityManager,
         EtatSortieService $etatSortieService
     ): Response {
+
+        $user = $this->getUser();
+        if ($user->isActif() === false) {
+            return $this->redirectToRoute('sortie_innactif');
+        }
+
         $sortie = new Sortie();
 
         $form = $this->createForm(SortieFormType::class, $sortie, [
@@ -158,6 +174,12 @@ class SortieController extends AbstractController
         EntityManagerInterface $entityManager,
         EtatSortieService $etatSortieService
     ): Response {
+
+        $user = $this->getUser();
+        if ($user->isActif() === false) {
+            return $this->redirectToRoute('sortie_innactif');
+        }
+
         /** @var User|null $user */
         $user = $this->getUser();
         if (!$user) {
@@ -201,6 +223,12 @@ class SortieController extends AbstractController
         EntityManagerInterface $entityManager,
         EtatSortieService $etatSortieService
     ): Response {
+
+        $user = $this->getUser();
+        if ($user->isActif() === false) {
+            return $this->redirectToRoute('sortie_innactif');
+        }
+
         /** @var User|null $user */
         $user = $this->getUser();
         if (!$user) {
@@ -234,9 +262,16 @@ class SortieController extends AbstractController
         EntityManagerInterface $entityManager,
         EtatSortieService $etatSortieService
     ): Response {
+
+        $user = $this->getUser();
+        if ($user->isActif() === false) {
+            return $this->redirectToRoute('sortie_innactif');
+        }
+
         /** @var User|null $user */
         $user = $this->getUser();
         if (!$user) {
+
             throw $this->createAccessDeniedException();
         }
 
@@ -263,6 +298,12 @@ class SortieController extends AbstractController
         EntityManagerInterface $entityManager,
         EtatSortieService $etatSortieService
     ): Response {
+
+        $user = $this->getUser();
+        if ($user->isActif() === false) {
+            return $this->redirectToRoute('sortie_innactif');
+        }
+
         /** @var User|null $user */
         $user = $this->getUser();
         if (!$user) {
@@ -294,5 +335,14 @@ class SortieController extends AbstractController
 
         $this->addFlash('success', 'Sortie annulée ✅');
         return $this->redirectToRoute('sortie_list');
+    }
+    #[Route('/sortie/compteInactif', name: 'sortie_innactif', methods: ['GET'])]
+    public function compteInactif(){
+
+        $user = $this->getUser();
+        if ($user->isActif() === true) {
+            return $this->redirectToRoute('sortie_list');
+        }
+        return $this->render('sortie/compte_inactif.html.twig');
     }
 }

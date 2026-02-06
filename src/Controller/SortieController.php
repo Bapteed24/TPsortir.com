@@ -24,11 +24,18 @@ class SortieController extends AbstractController
         EtatSortieService $etatSortieService
     ): Response {
 
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        if ($user->isActif() === false) {
+            return $this->redirectToRoute('sortie_innactif');
+        }
+
         $campusOptions = $campusRepository->findAll();
+        $defaultCampus = ($user && $user->getCampus()) ? $user->getCampus()->getId() : '';
 
 
         $filters = [
-            'campus' => $request->query->get('campus', ''),
+            'campus' => $request->query->get('campus', $defaultCampus),
             'q' => trim((string) $request->query->get('q', '')),
             'from' => (string) $request->query->get('from', ''),
             'to' => (string) $request->query->get('to', ''),
@@ -105,6 +112,12 @@ class SortieController extends AbstractController
     #[Route('/sortie/{id}', name: 'sortie_detail', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function detail(Sortie $sortie): Response
     {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        if ($user->isActif() === false) {
+            return $this->redirectToRoute('sortie_innactif');
+        }
+
         return $this->render('sortie/detail.html.twig', [
             'sortie' => $sortie,
         ]);
@@ -116,6 +129,13 @@ class SortieController extends AbstractController
         EntityManagerInterface $entityManager,
         EtatSortieService $etatSortieService
     ): Response {
+
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        if ($user->isActif() === false) {
+            return $this->redirectToRoute('sortie_innactif');
+        }
+
         $sortie = new Sortie();
 
         $form = $this->createForm(SortieFormType::class, $sortie, [
@@ -154,10 +174,18 @@ class SortieController extends AbstractController
 
     #[Route('/sortie/{id}/inscrire', name: 'sortie_inscrire', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function inscrire(
+
         Sortie $sortie,
         EntityManagerInterface $entityManager,
         EtatSortieService $etatSortieService
     ): Response {
+
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        if ($user->isActif() === false) {
+            return $this->redirectToRoute('sortie_innactif');
+        }
+
         /** @var User|null $user */
         $user = $this->getUser();
         if (!$user) {
@@ -201,6 +229,13 @@ class SortieController extends AbstractController
         EntityManagerInterface $entityManager,
         EtatSortieService $etatSortieService
     ): Response {
+
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        if ($user->isActif() === false) {
+            return $this->redirectToRoute('sortie_innactif');
+        }
+
         /** @var User|null $user */
         $user = $this->getUser();
         if (!$user) {
@@ -234,6 +269,13 @@ class SortieController extends AbstractController
         EntityManagerInterface $entityManager,
         EtatSortieService $etatSortieService
     ): Response {
+
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        if ($user->isActif() === false) {
+            return $this->redirectToRoute('sortie_innactif');
+        }
+
         /** @var User|null $user */
         $user = $this->getUser();
         if (!$user) {
@@ -263,6 +305,13 @@ class SortieController extends AbstractController
         EntityManagerInterface $entityManager,
         EtatSortieService $etatSortieService
     ): Response {
+
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        if ($user->isActif() === false) {
+            return $this->redirectToRoute('sortie_innactif');
+        }
+
         /** @var User|null $user */
         $user = $this->getUser();
         if (!$user) {
@@ -295,4 +344,15 @@ class SortieController extends AbstractController
         $this->addFlash('success', 'Sortie annulée ✅');
         return $this->redirectToRoute('sortie_list');
     }
+
+#[Route('/sortie/compteinactif', name: 'sortie_innactif', methods: ['GET'])]
+
+public function compteinactif(){
+        $user = $this->getUser();
+        if (!$user->isActif() === false) {
+            return $this->redirectToRoute('sortie_list');
+        }
+        return $this->render('sortie/compte_inactif.html.twig', []);
+}
+
 }

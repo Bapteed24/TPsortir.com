@@ -31,9 +31,10 @@ class SortieController extends AbstractController
 
         $campusOptions = $campusRepository->findAll();
 
+        $defaultCampus = $user->getCampus()->getId();
 
         $filters = [
-            'campus' => $request->query->get('campus', ''),
+            'campus' => $request->query->get('campus', $defaultCampus),
             'q' => trim((string) $request->query->get('q', '')),
             'from' => (string) $request->query->get('from', ''),
             'to' => (string) $request->query->get('to', ''),

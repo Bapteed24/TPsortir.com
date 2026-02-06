@@ -18,7 +18,13 @@ class ProfileController extends AbstractController
         EntityManagerInterface $em,
         UserPasswordHasherInterface $passwordHasher
     ): Response {
+
+        /** @var \App\Entity\User $user */
         $user = $this->getUser();
+        if ($user->isActif() === false) {
+            return $this->redirectToRoute('sortie_innactif');
+        }
+
         if (!$user) {
             throw $this->createAccessDeniedException();
         }

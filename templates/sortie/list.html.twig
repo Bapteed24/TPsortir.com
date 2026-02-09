@@ -8,59 +8,80 @@
     <section class="filters card">
       <h2>Filtrer les sorties</h2>
 
-      <form method="get" class="filters-layout">
-        <div class="filters-left">
+      <div class="well">
+        <form method="get" action="{{ path('sortie_list') }}">
           <div class="row">
-            <label for="campus">Campus</label>
-            <select id="campus" name="campus">
-              <option value="">-- Tous --</option>
-              {% for c in campusOptions %}
-                <option value="{{ c.id }}" {% if filters.campus == (c.id ~ '') %}selected{% endif %}>
-                  {{ c.name }}
-                </option>
-              {% endfor %}
-            </select>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="campus">Campus</label>
+                <select id="campus" name="campus" class="form-control">
+                  <option value="">-- Tous --</option>
+                  {% for c in campusOptions %}
+                    <option value="{{ c.id }}" {% if filters.campus == c.id %}selected{% endif %}>
+                      {{ c.name }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group mt-2">
+                <label for="ville">Ville</label>
+                <select id="ville" name="ville" class="form-control">
+                  <option value="">-- Toutes --</option>
+                  {% for v in villeOptions %}
+                    <option value="{{ v.id }}" {% if filters.ville == v.id %}selected{% endif %}>
+                      {{ v.name }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group mt-2">
+                <label for="q">Le nom de la sortie contient :</label>
+                <input type="text" id="q" name="q" value="{{ filters.q }}" class="form-control" placeholder="search">
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="row">
+                <div class="col-md-6">
+                  <label for="from">Entre :</label>
+                  <input type="date" id="from" name="from" value="{{ filters.from }}" class="form-control">
+                </div>
+                <div class="col-md-6">
+                  <label for="to">Et :</label>
+                  <input type="date" id="to" name="to" value="{{ filters.to }}" class="form-control">
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="mine" name="mine" value="1" {% if filters.mine %}checked{% endif %}>
+                  <label class="form-check-label" for="mine">Sorties dont je suis l'organisateur/trice</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="registered" name="registered" value="1" {% if filters.registered %}checked{% endif %}>
+                  <label class="form-check-label" for="registered">Sorties auxquelles je suis inscrit/e</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="not_registered" name="not_registered" value="1" {% if filters.not_registered %}checked{% endif %}>
+                  <label class="form-check-label" for="not_registered">Sorties auxquelles je ne suis pas inscrit/e</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="finished" name="finished" value="1" {% if filters.finished %}checked{% endif %}>
+                  <label class="form-check-label" for="finished">Sorties passées</label>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div class="row">
-            <label for="q">Le nom de la sortie contient</label>
-            <input id="q" name="q" type="search" value="{{ filters.q }}" placeholder="search">
+          <div class="row mt-3">
+            <div class="col-md-12 text-center">
+              <button type="submit" class="btn btn-primary btn-lg">Rechercher</button>
+            </div>
           </div>
-
-          <div class="row row-inline">
-            <label for="from">Entre</label>
-            <input id="from" name="from" type="date" value="{{ filters.from }}">
-            <span class="inline-text">et</span>
-            <input id="to" name="to" type="date" value="{{ filters.to }}">
-          </div>
-        </div>
-
-        <div class="filters-middle">
-          <label class="check">
-            <input type="checkbox" name="mine" {% if filters.mine %}checked{% endif %}>
-            Sorties dont je suis l'organisateur/trice
-          </label>
-
-          <label class="check">
-            <input type="checkbox" name="registered" {% if filters.registered %}checked{% endif %}>
-            Sorties auxquelles je suis inscrit/e
-          </label>
-
-          <label class="check">
-            <input type="checkbox" name="not_registered" {% if filters.not_registered %}checked{% endif %}>
-            Sorties auxquelles je ne suis pas inscrit/e
-          </label>
-
-          <label class="check">
-            <input type="checkbox" name="finished" {% if filters.finished %}checked{% endif %}>
-            Sorties terminées
-          </label>
-        </div>
-
-        <div class="filters-right">
-          <button class="btn btn--big" type="submit">Rechercher</button>
-        </div>
-      </form>
+        </form>
+      </div>
     </section>
 
     <section class="card">
@@ -197,11 +218,6 @@
                 {% endif %}
 
               <div class="modal fade" id="annulerSortieModal-{{ s.id }}" tabindex="-1" aria-hidden="true">
-                <div clasds
-
-
-
-
               </div>
               </td>
 

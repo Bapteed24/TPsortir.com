@@ -24,6 +24,7 @@ class SortieController extends AbstractController
         Request $request,
         CampusRepository $campusRepository,
         SortieRepository $sortieRepository,
+        \App\Repository\VilleRepository $villeRepository,
         EtatSortieService $etatSortieService
     ): Response {
 
@@ -33,14 +34,15 @@ class SortieController extends AbstractController
             return $this->redirectToRoute('sortie_innactif');
         }
 
-
-
         $campusOptions = $campusRepository->findAll();
+        $villeOptions = $villeRepository->findAll();
+
         $defaultCampus = ($user && $user->getCampus()) ? $user->getCampus()->getId() : '';
 
 
         $filters = [
             'campus' => $request->query->get('campus', $defaultCampus),
+            'ville' => $request->query->get('ville', ''),
             'q' => trim((string) $request->query->get('q', '')),
             'from' => (string) $request->query->get('from', ''),
             'to' => (string) $request->query->get('to', ''),
@@ -52,10 +54,8 @@ class SortieController extends AbstractController
 
 
 
-
-//        $allSorties = $sortieRepository->findBy([], ['dateHeureDebut' => 'DESC']);
         $allSorties = $sortieRepository->listAccueil($user);
-//        dump($allSorties);die;
+
 
         foreach ($allSorties as $s) {
             $etatSortieService->appliquerTransitionsAutomatiques($s);
@@ -68,6 +68,11 @@ class SortieController extends AbstractController
         $sorties = array_filter($allSorties, function ($sortie) use ($filters, $user) {
 
             if (!empty($filters['campus']) && $sortie->getCampus()->getId() != $filters['campus']) {
+                return false;
+            }
+
+
+            if (!empty($filters['ville']) && $sortie->getLieu()->getVille()->getId() != $filters['ville']) {
                 return false;
             }
 
@@ -111,6 +116,7 @@ class SortieController extends AbstractController
 
         return $this->render('sortie/list.html.twig', [
             'campusOptions' => $campusOptions,
+            'villeOptions' => $villeOptions,
             'filters' => $filters,
             'participantNom' => $this->getUser()?->getFirstname(),
             'sorties' => $sorties,

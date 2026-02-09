@@ -21,6 +21,10 @@ class ProfileFormType extends AbstractType
     {
         $builder
             ->add('email', EmailType::class)
+            ->add('username', TextType::class, [
+                'label' => 'Pseudo',
+                'required' => false,
+            ])
             ->add('name', TextType::class, [
                 'label' => 'Nom',
                 'required' => false,

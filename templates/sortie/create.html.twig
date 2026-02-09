@@ -1,18 +1,180 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    <style>
+        form {
+            display:flex;
+            flex-wrap: wrap;
+            margin-top:40px;
+        }
+
+        .item {
+            flex: 0 0 50%;
+        }
+        .item:nth-child(3) {
+            flex: 0 0 100%;
+        }
+        textarea {
+            width: 100%;
+        }
+        .item > div {
+            display:flex;
+        }
+        .item > div > label, .item > div > input {
+            flex: 0 0 50%;
+        }
+        .colonne-1 {
+            padding-right: 20px;
+        }
+        .colonne-2 {
+            padding-left: 20px;
+        }
+        .form-actions {
+            justify-content: center;
+        }
+        .form-actions .btn {
+            margin : 40px 5px 5px 20px;
+        }
+        section {
+            text-align: center;
+            margin-top: 40px;
+        }
+        .info-block > div > div {
+            width: 100%;
+        }
+    </style>
+{% endblock %}
 {% block body %}
-{% form_theme form 'bootstrap_5_layout.html.twig' %}
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <div class="form-actions">
-        <button type="submit" name="action" value="draft" class="btn">
-            Enregistrer le brouillopn
-        </button>
-        <button type="submit" name="action" value="publish" class="btn btn-primary">
-            Publier
-        </button>
+    <section>
+        <h1>Crée une sortie</h1>
+    </section>
 
-    </div>
+{#    {{ dump(app.user.campus.name) }}#}
+{#{% form_theme form 'bootstrap_5_layout.html.twig' %}#}
+    <form action="" method="post">
+        {{ form_start(form) }}
+        <div class="item colonne-1">
+            {{ form_row(form.name, {'label': 'Nom de la sortie'}) }}
+            {{ form_row(form.dateHeureDebut) }}
+            {{ form_row(form.dateLimiteInscription )}}
+            {{ form_row(form.nbInscriptionMax) }}
+            {{ form_row(form.duree) }}
 
+{#            {{ form_widget(form.name) }}#}
+{#            {{ form_widget(form.dateHeureDebut) }}#}
+{#            {{ form_widget(form.dateLimiteInscription) }}#}
+{#            {{ form_widget(form.nbInscriptionMax) }}#}
+{#            {{ form_widget(form.duree) }}#}
+        </div>
+        <div class="item colonne-2">
+
+            {{ form_row(form.campus, {'label': 'Campus', attr: {
+                'disabled': 'disabled'
+            }}) }}
+            {{ form_row(form.lieu ,{'label': 'Lieu'}) }}
+            <div class="mb-3">
+                <label class="form-label">Rue</label>
+                <span id="street"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Code Postal</label>
+                <span id="codePostal"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Lattitude / Longitude</label>
+                <span id="latLon"></span>
+            </div>
+        </div>
+        <div class="item info-block">
+            <div>
+                {{ form_row(form.infoSortie) }}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" name="action" value="draft" class="btn btn-warning">
+                    Enregistrer le brouillon
+                </button>
+                <button type="submit" name="action" value="publish" class="btn btn-success">
+                    Publier
+                </button>
+                <a href="{{ path('sortie_list') }}" class="btn btn-secondary">
+                    Retour à la liste
+                </a>
+            </div>
+        </div>
+    </form>
     {{ form_end(form) }}
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        window.onload = function() {
+
+            let campusId = {{ app.user.campus.id }}
+
+
+            let campus = document.getElementById('sortie_form_campus');
+            campus.value = campusId;
+            console.log(campusId);
+
+            let lieu = document.getElementById('sortie_form_lieu')
+            changeDataAjax ()
+            lieu.addEventListener('change', () => {
+                changeDataAjax ()
+                {#let id = lieu.value#}
+                {#fetch('{{ path('lieu_detail_ajax', { id: 'ID_PLACEHOLDER' }) }}'.replace('ID_PLACEHOLDER', id))#}
+                {#    .then(response => {#}
+                {#        if (!response.ok) {#}
+                {#            throw new Error('Erreur réseau');#}
+                {#        }#}
+                {#        return response.json();#}
+                {#    })#}
+                {#    .then(data => {#}
+                {#        console.log(data);#}
+                {#        document.getElementById('street').innerHTML = data.street#}
+                {#        document.getElementById('codePostal').innerHTML = data.codePostal#}
+                {#        document.getElementById('latLon').innerHTML = data.latitude + ' - ' + data.longitute#}
+                {#        // data = ton JSON Symfony#}
+                {#    })#}
+            })
+
+            function changeDataAjax () {
+                let id = lieu.value
+                fetch('{{ path('lieu_detail_ajax', { id: 'ID_PLACEHOLDER' }) }}'.replace('ID_PLACEHOLDER', id))
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erreur réseau');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log(data);
+                        document.getElementById('street').innerHTML = data.street
+                        document.getElementById('codePostal').innerHTML = data.codePostal
+                        document.getElementById('latLon').innerHTML = data.latitude + ' - ' + data.longitute
+                        // data = ton JSON Symfony
+                    })
+            }
+
+
+            {#lieu.addEventListener('change', () => {#}
+            {#    let value = lieu.value#}
+            {#    fetch("{{ path('lieu_detail_ajax') }}").then(response => {#}
+            {#        if (!response.ok) {#}
+            {#            throw new Error('Erreur réseau');#}
+            {#        }#}
+            {#        return response.json();#}
+            {#    })#}
+            {#        .then(data => {#}
+            {#            console.log(data);#}
+            {#            // data = ton JSON Symfony#}
+            {#        })#}
+
+            {#})#}
+        }
+
+
+
+    </script>
+
 {% endblock %}

@@ -40,4 +40,20 @@ class LieuRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function getByIdAjax(int $id)
+    {
+        return $this->createQueryBuilder('l')
+            ->leftJoin('l.ville', 'v')
+            ->addSelect('l.id')
+            ->addSelect('l.latitude')
+            ->addSelect('l.street')
+            ->addSelect('l.longitute')
+            ->addSelect('l.name')
+            ->addSelect('v.codePostal')
+            ->where('l.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

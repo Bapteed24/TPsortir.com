@@ -21,14 +21,18 @@ class SortieFormType extends AbstractType
     {
         $builder
             ->add('name',TextType::class, [
-                'label' => 'Nom',
+                'label' => 'Nom de la sortie',
             ])
             ->add('dateHeureDebut', DateTimeType::class, [
-                'label' => 'date heure debut',
+                'label' => 'Date et heure de la sortie',
+                'widget' => 'single_text',
+                'html5' => true,
             ])
             ->add('duree')
             ->add('dateLimiteInscription', DateTimeType::class, [
                 'label' => 'date limite inscription',
+                'widget' => 'single_text',
+                'html5' => true,
             ])
             ->add('nbInscriptionMax')
             ->add('infoSortie')

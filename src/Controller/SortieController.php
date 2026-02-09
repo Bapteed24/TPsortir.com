@@ -2,14 +2,17 @@
 
 namespace App\Controller;
 
+use App\Entity\Lieu;
 use App\Entity\Sortie;
 use App\Entity\User;
 use App\Form\SortieFormType;
 use App\Repository\CampusRepository;
+use App\Repository\LieuRepository;
 use App\Repository\SortieRepository;
 use App\Service\EtatSortieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -149,13 +152,13 @@ class SortieController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted()) {
             /** @var User|null $user */
             $user = $this->getUser();
             if (!$user) {
                 throw $this->createAccessDeniedException();
             }
-
+            $sortie->setCampus($user->getCampus());
             $sortie->setOrganisateurSortie($user);
             $user->addSorty($sortie);
 
@@ -350,14 +353,26 @@ class SortieController extends AbstractController
         return $this->redirectToRoute('sortie_list');
     }
 
-#[Route('/sortie/compteinactif', name: 'sortie_innactif', methods: ['GET'])]
+    #[Route('/sortie/compteinactif', name: 'sortie_innactif', methods: ['GET'])]
 
-public function compteinactif(){
-        $user = $this->getUser();
-        if (!$user->isActif() === false) {
-            return $this->redirectToRoute('sortie_list');
-        }
-        return $this->render('sortie/compte_inactif.html.twig', []);
-}
+    public function compteinactif(){
+            $user = $this->getUser();
+            if (!$user->isActif() === false) {
+                return $this->redirectToRoute('sortie_list');
+            }
+            return $this->render('sortie/compte_inactif.html.twig', []);
+    }
+
+    #[Route('/ajax/lieu/{id}', name: 'lieu_detail_ajax', methods: ['GET'])]
+    public function LieuDetailAjax(Lieu $lieu, LieuRepository $lieuRepository): Response
+    {
+
+        # methode a changer
+        $lieu2 = $lieuRepository->getByIdAjax($lieu->getId());
+        return $this->json($lieu2, 200, [], [
+            'groups' => ['post:read'],
+        ]);
+    }
+
 
 }

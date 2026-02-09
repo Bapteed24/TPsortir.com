@@ -19,6 +19,15 @@
         <div class="card shadow-sm">
             <div class="card-body">
 
+             {# ✅ Step 4: show current photo #}
+    {% if app.user and app.user.photoFilename %}
+        <div class="text-center mb-3">
+            <img src="{{ asset('uploads/profiles/' ~ app.user.photoFilename) }}"
+                 alt="Photo profil"
+                 style="max-width:150px; border-radius:50%;">
+        </div>
+    {% endif %}
+
                 {{ form_start(form) }}
 
                 <div class="row g-3">
@@ -40,6 +49,11 @@
                     <div class="col-12">
                         {{ form_row(form.campus, { 'attr': {'class': 'form-select'} }) }}
                     </div>
+
+                    <div class="col-12">
+    {{ form_row(form.photo, { 'attr': {'class': 'form-control'} }) }}
+</div>
+
 
                     <div class="col-12">
                         {{ form_row(form.plainPassword, { 'attr': {'class': 'form-control'} }) }}

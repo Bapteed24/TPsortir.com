@@ -10,6 +10,12 @@
 
         <div class="card">
             <dl class="dl">
+            {% if participant.photoFilename %}
+  <img src="{{ asset('uploads/profiles/' ~ participant.photoFilename) }}"
+       alt="Photo de profil"
+       style="max-width:150px; border-radius:50%;">
+{% endif %}
+
                 <div><dt>Prénom</dt><dd>{{ participant.firstname ?? '-' }}</dd></div>
                 <div><dt>Nom</dt><dd>{{ participant.name ?? '-' }}</dd></div>
                 <div><dt>Email</dt><dd>{{ participant.email ?? '-' }}</dd></div>

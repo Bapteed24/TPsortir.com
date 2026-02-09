@@ -6,6 +6,9 @@ use App\Entity\Campus;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use App\Entity\User;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\Image;
+
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -52,7 +55,19 @@ class ProfileFormType extends AbstractType
                         'max' => 4096,
                     ]),
                 ],
-            ]);
+            ])
+            
+            ->add('photo', FileType::class, [
+    'mapped' => false,
+    'required' => false,
+    'constraints' => [
+        new Image([
+            'maxSize' => '2M',
+        ]),
+    ],
+])
+;
+
     }
 
     public function configureOptions(OptionsResolver $resolver): void

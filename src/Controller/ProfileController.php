@@ -40,6 +40,20 @@ class ProfileController extends AbstractController
                 );
             }
 
+            $photo = $form->get('photo')->getData();
+            if ($photo) {
+                $newFilename = uniqid() . '.' . $photo->guessExtension();
+                try {
+                    $photo->move(
+                        $this->getParameter('profile_photos_dir'),
+                        $newFilename
+                    );
+                    $user->setPhotoFilename($newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Erreur lors de l\'upload de la photo');
+                }
+            }
+
             $em->flush();
             $this->addFlash('success', 'Profil mis à jour');
             return $this->redirectToRoute('app_profile');

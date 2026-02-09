@@ -75,7 +75,6 @@
             <th>État</th>
             <th>Inscrit</th>
             <th>Organisateur</th>
-              <th>Participants</th>
             <th>Actions</th>
           </tr>
           </thead>
@@ -101,7 +100,7 @@
               <td>{{ s.participants|length }}/{{ s.nbInscriptionMax }}</td>
 
 
-              <td>{{ s.etat }}</td>
+              <td>{{ s.etat.libelle }}</td>
 
               <td class="center">{{ isIn ? 'X' : '' }}</td>
 
@@ -152,11 +151,49 @@
 
                 {# ... #}
 
-                {% if app.user and canManage and etat == 'Ouverte' and othersCount == 0 %}
-                  <a class="action-link" href="{{ path('sortie_annuler', {id: s.id}) }}">Annuler</a>
+                {% if app.user and canManage and etat == 'Ouverte' and etat != 'En cours' %}
+                  <button
+                    class="action-link btn btn-link text-danger"
+                    data-bs-toggle="modal"
+                    data-bs-target="#annulerSortieModal-{{ s.id }}">
+                    Annuler
+              </button>
+
+
+                  <div class="modal fade" id="annulerSortieModal-{{ s.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+
+                        <form method="post" action="{{ path('sortie_annuler', {id: s.id}) }}">
+                          <div class="modal-header">
+                            <h5 class="modal-title">Annuler la sortie</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+
+                          <div class="modal-body">
+                            <label class="form-label">Motif d’annulation</label>
+                            <textarea name="motif" class="form-control" required></textarea>
+                          </div>
+
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Retour</button>
+                            <button type="submit" class="btn btn-danger">Confirmer</button>
+                          </div>
+                        </form>
+
+                      </div>
+                    </div>
+
+
                 {% endif %}
 
+              <div class="modal fade" id="annulerSortieModal-{{ s.id }}" tabindex="-1" aria-hidden="true">
+                <div clasds
 
+
+
+
+              </div>
               </td>
 
             </tr>

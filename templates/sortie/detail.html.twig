@@ -122,6 +122,15 @@
         <div class="value">{{ sortie.infoSortie ?? '—' }}</div>
       </div>
 
+      {% if sortie.etat.libelle == 'Annulée' %}
+        <div class="alert alert-warning mt-3">
+            <strong>Motif d'annulation</strong><br>
+            {{ sortie.motifAnnulation }}
+
+        </div>
+
+      {% endif %}
+
       <div class="bottom-area">
         <section class="participants-box" aria-label="Liste des participants inscrits">
           <h2 class="participants-box__title">

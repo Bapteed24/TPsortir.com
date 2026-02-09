@@ -29,6 +29,9 @@ class Sortie
     #[ORM\Column]
     private ?\DateTimeImmutable $dateLimiteInscription = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $motifAnnulation = null;
+
     #[ORM\Column]
     private ?int $nbInscriptionMax = null;
 
@@ -117,6 +120,18 @@ class Sortie
         if ($this->participants->removeElement($participant)) {
             $participant->removeSorty($this);
         }
+        return $this;
+    }
+
+    public function getMotifAnnulation(): ?string
+    {
+        return $this->motifAnnulation;
+    }
+
+    public function setMotifAnnulation(?string $motifAnnulation): self
+    {
+        $this->motifAnnulation = $motifAnnulation;
+
         return $this;
     }
 }

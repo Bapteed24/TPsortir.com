@@ -304,11 +304,12 @@ class SortieController extends AbstractController
         return $this->redirectToRoute('sortie_list');
     }
 
-    #[Route('/sortie/{id}/annuler', name: 'sortie_annuler', requirements: ['id' => '\d+'], methods: ['GET'])]
+    #[Route('/sortie/{id}/annuler', name: 'sortie_annuler', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function annuler(
         Sortie $sortie,
         EntityManagerInterface $entityManager,
-        EtatSortieService $etatSortieService
+        EtatSortieService $etatSortieService,
+        Request $request,
     ): Response {
 
         /** @var \App\Entity\User $user */
@@ -331,17 +332,26 @@ class SortieController extends AbstractController
         $etatSortieService->appliquerTransitionsAutomatiques($sortie);
         $etatSortieService->flush();
 
+        if ($sortie->getEtat()->getLibelle() === 'En cours') {
+            $this->addFlash('danger', 'Annulation impossible : La sortie à commencée.');
+            return $this->redirectToRoute('sortie_list');
+        }
+
+
         if ($sortie->getEtat()->getLibelle() !== 'Ouverte') {
             $this->addFlash('danger', 'Annulation impossible : la sortie n’est pas ouverte.');
             return $this->redirectToRoute('sortie_list');
         }
 
-        foreach ($sortie->getParticipants() as $p) {
-            if ($sortie->getOrganisateurSortie() && $p->getId() !== $sortie->getOrganisateurSortie()->getId()) {
-                $this->addFlash('danger', 'Annulation impossible : des participants sont déjà inscrits.');
-                return $this->redirectToRoute('sortie_list');
-            }
+        $motif = trim((string) $request->request->get('motif'));
+        if ($motif === '') {
+            $this->addFlash('danger', 'Motif obligatoire pour annuler la sortie.');
+            return $this->redirectToRoute('sortie_list');
+
         }
+
+        $sortie->setMotifAnnulation($motif);
+
 
         $sortie->setEtat($etatSortieService->getEtat('Annulée'));
         $entityManager->flush();

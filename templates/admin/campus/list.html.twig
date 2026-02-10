@@ -1,0 +1,143 @@
+
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .topbar {
+            text-align: right;
+        }
+        body {
+            background-color: #fff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        table th, table td {
+            border:1px solid #0a0a0a;
+            padding:5px;
+            text-align: center;
+        }
+        th {
+            background-color:gray;
+        }
+        .btn {
+            padding:10px;
+            display:inline-block;
+            text-decoration: none;
+            background-color: green;
+            border-radius: 5px;
+            color:white;
+        }
+        .add-div {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div>
+        <h1>Liste des campus</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_admin') }}">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Campus</li>
+            </ol>
+        </nav>
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ type }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+        <div class="add-div">
+            <a href="{{ path('app_admin_campus_create') }}" class="btn btn-secondary">Créer un nouveau campus</a>
+        </div>
+        <table>
+            <thead>
+            <th>Id</th>
+            <th>Nom</th>
+            <th>Actions</th>
+            </thead>
+            {% for c in campus %}
+                <tr>
+                    <td>{{ c.id }}</td>
+                    <td>{{ c.name }}</td>
+                    <td>
+                        <a class="btn btn-warning" href="{{ path('app_admin_campus_update', {'id': c.id}) }}">Modifier</a>
+                        <button class="btn btn-danger"
+                                data-bs-toggle="modal"  data-bs-target="#confirmDeleteModal"
+                                data-id="{{ c.id }}"
+                                data-url="{{ path('app_admin_campus_delete', { id: c.id }) }}"
+                                data-token="{{ csrf_token('delete' ~ c.id) }}">Supprimer
+                        </button>
+                    </td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger">
+                        Confirmer la suppression
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p>⚠️ Cette action est <strong>irréversible</strong>.</p>
+                    <p>Voulez-vous vraiment supprimer cet élément ?</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Annuler
+                    </button>
+
+                    <form method="post" id="deleteForm">
+                        <input type="hidden" name="_token" id="deleteToken">
+                        <button class="btn btn-danger">
+                            Supprimer
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block javascripts%}
+    <script>
+        window.onload = function() {
+            const deleteModal = document.getElementById('confirmDeleteModal');
+
+            deleteModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+
+                const url = button.getAttribute('data-url');
+                const token = button.getAttribute('data-token');
+
+                const form = deleteModal.querySelector('#deleteForm');
+                const tokenInput = deleteModal.querySelector('#deleteToken');
+
+                form.action = url;
+                tokenInput.value = token;
+            });
+        }
+
+    </script>
+
+{% endblock %}

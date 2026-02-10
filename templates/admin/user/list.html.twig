@@ -13,12 +13,7 @@
         body {
             background-color: #fff;
             font-family: 'Segoe UI', Arial, sans-serif;
-            padding: 20px;
         }
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-        }
-
         table {
             border-collapse: collapse;
             width: 100%;
@@ -55,7 +50,14 @@
             <li class="breadcrumb-item active" aria-current="page">Utilisateurs</li>
         </ol>
     </nav>
-
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ type }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
     <div class="add-div">
         <a href="{{ path('app_admin_user_create') }}" class="btn btn-secondary">Créer un nouvelle utilisateur</a>
     </div>
@@ -73,7 +75,7 @@
                     <td>{{ user.name}}</td>
                     <td>{{ user.firstname}}</td>
                     <td>
-                        <a href="{{ path('adminUserUpdate', {id: user.id}) }}" class="btn btn-primary">Modifier</a>
+                        <a href="{{ path('adminUserUpdate', {id: user.id}) }}" class="btn btn-warning">Modifier</a>
                         <a href="{{ path('adminUserDelete', {id: user.id}) }}" onclick="return confirm('Action irréversible. Etes-vous sur ?')" class="btn btn-danger">Supprimer</a>
                     </td>
                 </tr>
@@ -81,4 +83,38 @@
         </tbody>
     </table>
 </div>
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">
+                    Confirmer la suppression
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <p>⚠️ Cette action est <strong>irréversible</strong>.</p>
+                <p>Voulez-vous vraiment supprimer cet élément ?</p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Annuler
+                </button>
+
+                <form method="post" id="deleteForm">
+                    <input type="hidden" name="_token" id="deleteToken">
+                    <button class="btn btn-danger">
+                        Supprimer
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
 {% endblock %}

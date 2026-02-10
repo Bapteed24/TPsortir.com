@@ -13,14 +13,7 @@
         body {
             background-color: #fff;
             font-family: 'Segoe UI', Arial, sans-serif;
-            padding: 20px;
         }
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-        }
-
-
-
         table {
             border-collapse: collapse;
             width: 100%;
@@ -57,7 +50,14 @@
                 <li class="breadcrumb-item active" aria-current="page">Sorties</li>
             </ol>
         </nav>
-
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ type }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
         <div class="add-div">
             <a href="{{ path('app_admin_sortie_create') }}" class="btn btn-secondary">Créer un nouvelle sortie</a>
         </div>
@@ -77,7 +77,10 @@
                     <td>{{ sortie.duree|date("H:i:s") }}</td>
                     <td>{{ sortie.dateLimiteInscription|date }}</td>
                     <td>{{ sortie.nbInscriptionMax }}</td>
-                    <td><a href="{{ path('app_admin_sortie_update', {id:sortie.id}) }}" class="btn btn-primary">Modifier</a> <a href="{{ path('app_admin_sortie_delete', {id:sortie.id}) }}" onclick="return confirm('Action irréversible. Etes-vous sur ?')" class="btn btn-danger">Supprimer</a></td>
+                    <td>
+                        <a href="{{ path('app_admin_sortie_update', {id:sortie.id}) }}" class="btn btn-primary">Modifier</a>
+                        <a href="{{ path('app_admin_sortie_delete', {id:sortie.id}) }}" onclick="return confirm('Action irréversible. Etes-vous sur ?')" class="btn btn-danger">Supprimer</a>
+                    </td>
                 </tr>
             {% endfor %}
         </table>

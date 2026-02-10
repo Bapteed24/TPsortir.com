@@ -78,8 +78,8 @@
                     <td>{{ sortie.dateLimiteInscription|date }}</td>
                     <td>{{ sortie.nbInscriptionMax }}</td>
                     <td>
-                        <a href="{{ path('app_admin_sortie_update', {id:sortie.id}) }}" class="btn btn-primary">Modifier</a>
-                        <a href="{{ path('app_admin_sortie_delete', {id:sortie.id}) }}" onclick="return confirm('Action irréversible. Etes-vous sur ?')" class="btn btn-danger">Supprimer</a>
+                        <a href="{{ path('app_admin_sortie_update', {id:sortie.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                        <a href="{{ path('app_admin_sortie_delete', {id:sortie.id}) }}"  class="btn btn-sm btn-danger">Supprimer</a>
                     </td>
                 </tr>
             {% endfor %}

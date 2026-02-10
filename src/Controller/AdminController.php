@@ -7,11 +7,11 @@ use App\Entity\Sortie;
 use App\Entity\User;
 use App\Entity\Ville;
 use App\Form\CampusFormType;
+use App\Form\RegistrationFormType;
 use App\Form\SortieFormType;
 use App\Form\VilleFormType;
 use App\Repository\CampusRepository;
 use App\Repository\LieuRepository;
-use App\Repository\RegistrationFormType;
 use App\Repository\SortieRepository;
 use App\Repository\UserRepository;
 use App\Repository\VilleRepository;
@@ -110,20 +110,31 @@ final class AdminController extends AbstractController
         ]);
     }
 
-    #[Route('/utilisateur/supprimer/{id}', name: 'adminUserDelete', requirements: ['id' => '\d+'], methods: ['GET'])]
+    #[Route('/utilisateur/supprimer/{id}', name: 'app_admin_user_delete', requirements: ['id' => '\d+'], methods: ['GET','POST'])]
     public function adminUserDelete(
         Request $request,
         EntityManagerInterface $entityManager,
         User $user,
+        UserRepository $userRepository,
     ): Response
     {
+        $errors = 0;
+
+        $userWithSortie = $userRepository->checkUserWithSortie($user->getId());
+
+        if ($userWithSortie) {
+            $errors++;
+            $this->addFlash('danger', "Impossible de supprimer l'utisateur'. Supprimer les sorties lié pour pouvoir le supprimer. Préférer mettre le compte en inactif.");
+        }
+        if ($errors > 0) {
+            return $this->redirectToRoute('app_admin_user_list');
+        }
         $entityManager->remove($user);
         $entityManager->flush();
 
         // Redirection après inscription
         return $this->redirectToRoute('app_admin_user_list');
     }
-
 
     #[Route('/sortie/list', name: 'app_admin_sortie_list')]
     public function listSortie(SortieRepository $sortieRepository): Response

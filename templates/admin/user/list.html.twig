@@ -77,8 +77,13 @@
                     <td>{{ user.firstname}}</td>
                     <td>{{ user.campus.name }}</td>
                     <td>
-                        <a href="{{ path('adminUserUpdate', {id: user.id}) }}" class="btn btn-warning">Modifier</a>
-                        <a href="{{ path('adminUserDelete', {id: user.id}) }}" onclick="return confirm('Action irréversible. Etes-vous sur ?')" class="btn btn-danger">Supprimer</a>
+                        <a href="{{ path('adminUserUpdate', {id: user.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                        <button class="btn btn-sm btn-danger"
+                                data-bs-toggle="modal"  data-bs-target="#confirmDeleteModal"
+                                data-id="{{ user.id }}"
+                                data-url="{{ path('app_admin_user_delete', { id: user.id }) }}"
+                                data-token="{{ csrf_token('delete' ~ user.id) }}">Supprimer
+                        </button>
                     </td>
                 </tr>
             {% endfor  %}
@@ -117,6 +122,26 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block javascripts%}
+    <script>
+        window.onload = function() {
+            const deleteModal = document.getElementById('confirmDeleteModal');
 
+            deleteModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+
+                const url = button.getAttribute('data-url');
+                const token = button.getAttribute('data-token');
+
+                const form = deleteModal.querySelector('#deleteForm');
+                const tokenInput = deleteModal.querySelector('#deleteToken');
+
+                form.action = url;
+                tokenInput.value = token;
+            });
+        }
+
+    </script>
 {% endblock %}

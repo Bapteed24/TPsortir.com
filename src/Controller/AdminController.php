@@ -10,6 +10,7 @@ use App\Form\CampusFormType;
 use App\Form\SortieFormType;
 use App\Form\VilleFormType;
 use App\Repository\CampusRepository;
+use App\Repository\LieuRepository;
 use App\Repository\RegistrationFormType;
 use App\Repository\SortieRepository;
 use App\Repository\UserRepository;
@@ -268,9 +269,22 @@ final class AdminController extends AbstractController
     #[Route('/campus/supprimer/{id}', name: 'app_admin_campus_delete', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function deleteCampus(
         EntityManagerInterface $entityManager,
+        UserRepository $userRepository,
         Campus $campus,
     ): Response
     {
+        $error = 0;
+
+        $users = $userRepository->findBy(["campus" => $campus->getId()]);
+        if ($users) {
+            $error++;
+            $this->addFlash('danger', 'Impossible de supprimer le campus. Veuillez supprimer les utilisateurs liés ou leur attribué un autre campus.');
+        }
+
+        if ($error > 0) {
+            return $this->redirectToRoute('app_admin_campus_list');
+        }
+
         $entityManager->remove($campus);
         $entityManager->flush();
 
@@ -290,7 +304,7 @@ final class AdminController extends AbstractController
         ]);
     }
 
-    #[Route('/ville/ajouer', name: 'app_admin_campus_create')]
+    #[Route('/ville/ajouer', name: 'app_admin_ville_create')]
     public function createVille(
         CampusRepository $campusRepository,
         Request $request,
@@ -321,7 +335,6 @@ final class AdminController extends AbstractController
 
     #[Route('/ville/modifier/{id}', name: 'app_admin_ville_update', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function updateVille(
-        CampusRepository $campusRepository,
         Request $request,
         Ville $ville,
         EntityManagerInterface $entityManager): Response
@@ -343,7 +356,6 @@ final class AdminController extends AbstractController
             return $this->redirectToRoute('app_admin_ville_list');
         }
 
-        $campus = $campusRepository->findAll();
         return $this->render('admin/ville/update.html.twig', [
             'form' => $form->createView(),
         ]);
@@ -353,8 +365,21 @@ final class AdminController extends AbstractController
     public function deleteVille(
         EntityManagerInterface $entityManager,
         Ville $ville,
+        LieuRepository $lieuRepository,
     ): Response
     {
+        $error = 0;
+        $lieux = $lieuRepository->findBy(["ville" => $ville->getId()]);
+        if ($lieux > 0) {
+            $error++;
+            $this->addFlash('danger', 'Impossible de supprimer la viller. Veuillez supprimer lieux liés.');
+        }
+        if ($error > 0) {
+            return $this->redirectToRoute('app_admin_ville_list');
+        }
+
+
+
         $entityManager->remove($ville);
         $entityManager->flush();
 

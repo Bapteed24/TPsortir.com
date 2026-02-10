@@ -66,6 +66,7 @@
             <th>Id</th>
             <th>Nom</th>
             <th>Prénom</th>
+            <th>Campus</th>
             <th></th>
         </thead>
         <tbody>
@@ -74,6 +75,7 @@
                     <td>{{ user.id}}</td>
                     <td>{{ user.name}}</td>
                     <td>{{ user.firstname}}</td>
+                    <td>{{ user.campus.name }}</td>
                     <td>
                         <a href="{{ path('adminUserUpdate', {id: user.id}) }}" class="btn btn-warning">Modifier</a>
                         <a href="{{ path('adminUserDelete', {id: user.id}) }}" onclick="return confirm('Action irréversible. Etes-vous sur ?')" class="btn btn-danger">Supprimer</a>

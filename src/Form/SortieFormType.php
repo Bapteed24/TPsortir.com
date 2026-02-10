@@ -47,7 +47,7 @@ class SortieFormType extends AbstractType
                 'choice_label' => 'name',
             ])
             ->add('ville', EntityType::class, [
-                'label' => 'Formateurs',
+                'label' => 'Ville',
                 'class' => Ville::class,
                 'required' => false,
                 'choice_label' => 'name',
@@ -57,12 +57,6 @@ class SortieFormType extends AbstractType
                         ->orderBy('v.name', 'ASC');
                 },
             ])
-
-
-            //->add('etat', EntityType::class, [
-            //    'class' => Etat::class,
-            //   'choice_label' => 'libelle',
-            //])
         ;
 
         if ($options['show_organisateurSortie']) {

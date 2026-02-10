@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repository;
+namespace App\Form;
 
 use App\Entity\Campus;
 use App\Entity\User;

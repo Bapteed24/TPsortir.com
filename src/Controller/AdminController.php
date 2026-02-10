@@ -2,20 +2,25 @@
 
 namespace App\Controller;
 
+use App\Entity\Campus;
 use App\Entity\Sortie;
 use App\Entity\User;
-use App\Form\RegistrationFormType;
+use App\Entity\Ville;
+use App\Form\CampusFormType;
 use App\Form\SortieFormType;
+use App\Form\VilleFormType;
+use App\Repository\CampusRepository;
+use App\Repository\LieuRepository;
+use App\Repository\RegistrationFormType;
 use App\Repository\SortieRepository;
 use App\Repository\UserRepository;
+use App\Repository\VilleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
-
-use Symfony\Component\HttpFoundation\Request;
 
 #[Route('/admin')]
 final class AdminController extends AbstractController
@@ -135,7 +140,6 @@ final class AdminController extends AbstractController
         EntityManagerInterface $entityManager
     ): Response
     {
-//        $user = $this->getUser();
         $sortie  = new Sortie();
         // Création du formulaire
         $form = $this->createForm(SortieFormType::class, $sortie);
@@ -143,7 +147,6 @@ final class AdminController extends AbstractController
         $form->handleRequest($request);
         // Soumission + validation
         if ($form->isSubmitted() && $form->isValid()) {
-//            $sortie->setOrganisateurSortie($user);
             $entityManager->persist($sortie);
             $entityManager->flush();
 
@@ -195,5 +198,194 @@ final class AdminController extends AbstractController
         return $this->redirectToRoute('app_admin_sortie_list');
     }
 
+    #[Route('/campus/list', name: 'app_admin_campus_list')]
+    public function listeCampus(CampusRepository $campusRepository): Response
+    {
+        $campus = $campusRepository->findAll();
+        return $this->render('admin/campus/list.html.twig', [
+            'campus' => $campus,
+        ]);
+    }
 
+    #[Route('/campus/ajouer', name: 'app_admin_campus_create')]
+    public function createCampus(
+        CampusRepository $campusRepository,
+        Request $request,
+        EntityManagerInterface $entityManager): Response
+    {
+        $campus  = new Campus();
+        // Création du formulaire
+        $form = $this->createForm(CampusFormType::class, $campus);
+
+        $form->handleRequest($request);
+        // Soumission + validation
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($campus);
+            $entityManager->flush();
+
+            // flash message
+            $this->addFlash('success', 'Le campus a bien été crée ✅');
+
+            // Redirection après inscription
+            return $this->redirectToRoute('app_admin_campus_list');
+        }
+
+        $campus = $campusRepository->findAll();
+        return $this->render('admin/campus/create.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/campus/modifier/{id}', name: 'app_admin_campus_update', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function udapteCampus(
+        CampusRepository $campusRepository,
+        Request $request,
+        Campus $campus,
+        EntityManagerInterface $entityManager): Response
+    {
+
+        // Création du formulaire
+        $form = $this->createForm(CampusFormType::class, $campus);
+
+        $form->handleRequest($request);
+        // Soumission + validation
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($campus);
+            $entityManager->flush();
+
+            // flash message
+            $this->addFlash('success', 'Le campus a bien été modifié ✅');
+
+            // Redirection après inscription
+            return $this->redirectToRoute('app_admin_campus_list');
+        }
+
+        $campus = $campusRepository->findAll();
+        return $this->render('admin/campus/update.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/campus/supprimer/{id}', name: 'app_admin_campus_delete', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function deleteCampus(
+        EntityManagerInterface $entityManager,
+        UserRepository $userRepository,
+        Campus $campus,
+    ): Response
+    {
+        $error = 0;
+
+        $users = $userRepository->findBy(["campus" => $campus->getId()]);
+        if ($users) {
+            $error++;
+            $this->addFlash('danger', 'Impossible de supprimer le campus. Veuillez supprimer les utilisateurs liés ou leur attribué un autre campus.');
+        }
+
+        if ($error > 0) {
+            return $this->redirectToRoute('app_admin_campus_list');
+        }
+
+        $entityManager->remove($campus);
+        $entityManager->flush();
+
+        // flash message
+        $this->addFlash('success', 'Le campus a bien été supprimer ✅');
+
+        return $this->redirectToRoute('app_admin_campus_list');
+    }
+
+
+    #[Route('/ville/list', name: 'app_admin_ville_list')]
+    public function villeCampus(VilleRepository $villeRepository): Response
+    {
+        $ville = $villeRepository->findAll();
+        return $this->render('admin/ville/list.html.twig', [
+            'villes' => $ville,
+        ]);
+    }
+
+    #[Route('/ville/ajouer', name: 'app_admin_ville_create')]
+    public function createVille(
+        CampusRepository $campusRepository,
+        Request $request,
+        EntityManagerInterface $entityManager): Response
+    {
+        $ville  = new ville();
+        // Création du formulaire
+        $form = $this->createForm(VilleFormType::class, $ville);
+
+        $form->handleRequest($request);
+        // Soumission + validation
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($ville);
+            $entityManager->flush();
+
+            // flash message
+            $this->addFlash('success', 'La ville a bien été crée ✅');
+
+            // Redirection après inscription
+            return $this->redirectToRoute('app_admin_ville_list');
+        }
+
+        $campus = $campusRepository->findAll();
+        return $this->render('admin/ville/create.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/ville/modifier/{id}', name: 'app_admin_ville_update', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function updateVille(
+        Request $request,
+        Ville $ville,
+        EntityManagerInterface $entityManager): Response
+    {
+
+        // Création du formulaire
+        $form = $this->createForm(VilleFormType::class, $ville);
+
+        $form->handleRequest($request);
+        // Soumission + validation
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($ville);
+            $entityManager->flush();
+
+            // flash message
+            $this->addFlash('success', 'La ville a bien été modifié ✅');
+
+            // Redirection après inscription
+            return $this->redirectToRoute('app_admin_ville_list');
+        }
+
+        return $this->render('admin/ville/update.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/ville/supprimer/{id}', name: 'app_admin_ville_delete', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function deleteVille(
+        EntityManagerInterface $entityManager,
+        Ville $ville,
+        LieuRepository $lieuRepository,
+    ): Response
+    {
+        $error = 0;
+        $lieux = $lieuRepository->findBy(["ville" => $ville->getId()]);
+        if ($lieux > 0) {
+            $error++;
+            $this->addFlash('danger', 'Impossible de supprimer la viller. Veuillez supprimer lieux liés.');
+        }
+        if ($error > 0) {
+            return $this->redirectToRoute('app_admin_ville_list');
+        }
+
+
+
+        $entityManager->remove($ville);
+        $entityManager->flush();
+
+        // flash message
+        $this->addFlash('success', 'La ville a bien été supprimer ✅');
+
+        return $this->redirectToRoute('app_admin_ville_list');
+    }
 }

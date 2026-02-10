@@ -2,7 +2,6 @@
 
 {% block title %}Hello AdminController!{% endblock %}
 
-
 {% block stylesheets %}
     <style>
         .container {
@@ -17,27 +16,30 @@
             font-family: 'Segoe UI', Arial, sans-serif;
         }
         form .btn {
+            margin: 0 auto;
             display:block;
-            margin:0 auto;
         }
     </style>
 {% endblock %}
 
 {% block body %}
-    <h1>Modification d'utilisateur</h1>
+    <h1>Création d'une ville</h1>
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ path('app_admin') }}">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{{ path('app_admin_user_list') }}">Utilisateurs</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Modifier</li>
+            <li class="breadcrumb-item"><a href="{{ path('app_admin_ville_list') }}">Villes</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Creation</li>
         </ol>
     </nav>
 
     <div>
-        {% form_theme registrationForm 'bootstrap_5_layout.html.twig' %}
-        {{ form_start(registrationForm) }}
-        {{ form_widget(registrationForm) }}
-        <button type="submit" class="btn btn-success">S’inscrire</button>
-        {{ form_end(registrationForm) }}
+        {% form_theme form 'bootstrap_5_layout.html.twig' %}
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit" class="btn btn-success">Enregistrer</button>
+        {{ form_end(form) }}
     </div>
+{% endblock %}
+
+{% block javascripts %}
 {% endblock %}

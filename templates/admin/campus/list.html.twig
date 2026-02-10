@@ -73,8 +73,8 @@
                     <td>{{ c.id }}</td>
                     <td>{{ c.name }}</td>
                     <td>
-                        <a class="btn btn-warning" href="{{ path('app_admin_campus_update', {'id': c.id}) }}">Modifier</a>
-                        <button class="btn btn-danger"
+                        <a class="btn btn-sm btn-warning" href="{{ path('app_admin_campus_update', {'id': c.id}) }}">Modifier</a>
+                        <button class="btn btn-sm btn-danger"
                                 data-bs-toggle="modal"  data-bs-target="#confirmDeleteModal"
                                 data-id="{{ c.id }}"
                                 data-url="{{ path('app_admin_campus_delete', { id: c.id }) }}"

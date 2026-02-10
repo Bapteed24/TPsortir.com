@@ -67,4 +67,15 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    public function checkUserWithSortie($user)
+    {
+        return $this->createQueryBuilder('u')
+            ->innerJoin('u.sorties', 's')
+            ->where('u.id = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+    }
+
 }

@@ -74,8 +74,8 @@
                     <td>{{ ville.name }}</td>
                     <td>{{ ville.codePostal }}</td>
                     <td>
-                        <a class="btn btn-warning" href="{{ path('app_admin_ville_update', {'id': ville.id}) }}">Modifier</a>
-                        <button class="btn btn-danger"
+                        <a class="btn btn-sm btn-warning" href="{{ path('app_admin_ville_update', {'id': ville.id}) }}">Modifier</a>
+                        <button class="btn btn-sm btn-danger"
                                 data-bs-toggle="modal"  data-bs-target="#confirmDeleteModal"
                                 data-id="{{ ville.id }}"
                                 data-url="{{ path('app_admin_ville_delete', { id: ville.id }) }}"

@@ -1,210 +1,333 @@
-/* Style global pour coller à la maquette */
+/* ==========================================================================
+   1. BASE & LAYOUT GLOBAL
+   (Le fond gris propre, la police et le conteneur principal)
+   ========================================================================== */
 body {
-    background-color: #fff;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    padding: 20px;
+    background-color: #f8f9fa; /* Le gris léger moderne */
+    font-family: 'Inter', 'Segoe UI', Helvetica, Arial, sans-serif;
+    color: #212529;
+    margin: 0;
+    padding: 0;
 }
 
-.container {
-    max-width: 1200px;
+main.container {
+    padding-top: 40px;
+    padding-bottom: 60px;
+    max-width: 1400px;
     margin: 0 auto;
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
-/* Header & Navbar alignée à droite */
+a {
+    text-decoration: none;
+    transition: color 0.2s;
+    color: #0d6efd;
+}
+
+a:hover {
+    color: #0a58ca;
+}
+
+/* ==========================================================================
+   2. HEADER & NAVIGATION
+   (Code conservé pour ta barre de navigation alignée à droite)
+   ========================================================================== */
 .header-top {
     display: flex;
     justify-content: flex-end;
     gap: 15px;
-    border-bottom: 2px solid #000;
-    padding-bottom: 5px;
-    margin-bottom: 10px;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    background: #fff;
+    padding-top: 10px;
+    padding-right: 20px;
 }
 
 .header-top a {
     text-decoration: none;
-    color: #0056b3;
+    color: #0d6efd;
     font-weight: bold;
-    border-right: 2px solid #000;
+    border-right: 2px solid #e0e0e0;
     padding-right: 15px;
+    font-size: 0.95rem;
 }
 
-.header-top a:last-child { border: none; }
+.header-top a:last-child {
+    border: none;
+}
 
-/* Bloc d'alerte Jaune (positionné comme sur la maquette) */
+/* ==========================================================================
+   3. COMPONENTS UTILITAIRES
+   (Alertes, Boutons globaux, Grilles de la page détail)
+   ========================================================================== */
+
+/* Bloc d'alerte Jaune (Admin) */
 .admin-alert {
-    background-color: #fce491;
-    border: 2px solid #000;
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    color: #856404;
     padding: 15px;
-    width: 400px;
+    width: 100%;
+    max-width: 400px;
     float: right;
     text-align: center;
     font-weight: bold;
-    border-radius: 10px;
+    border-radius: 6px;
     margin-bottom: 20px;
-}
-
-/* Filtres en deux colonnes */
-.filter-section {
     clear: both;
-    display: flex;
-    gap: 50px;
-    margin-bottom: 30px;
 }
 
-.filter-column { display: flex; flex-direction: column; gap: 10px; }
-
-/* TABLEAU : Bordures noires épaisses comme sur l'image */
-.table-maquette {
-    width: 100%;
-    border-collapse: collapse;
-    border: 3px solid #000;
-}
-
-.table-maquette th, .table-maquette td {
-    border: 2px solid #000;
-    padding: 10px;
-    text-align: left;
-}
-
-.table-maquette thead {
-    background-color: #d9d9d9;
-}
-
-/* Boutons */
-.btn-maquette {
-    border: 3px solid #000;
-    background: #fff;
-    padding: 10px 20px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 20px;
-}
-
-/* Base /
-.background { background-color: #0b57d0;}
-.container { max-width: 1100px; margin: 0 auto; padding: 16px; }
-.card { border: 2px solid #222; padding: 14px; margin: 14px 0; }
-.muted { color: #666; }
-.center { text-align: center; }
-a { color: #0b57d0; text-decoration: underline; }
-
-/ Header /
-.topbar { border-bottom: 2px solid #222; padding: 14px 0; }
-.topbarinner { max-width: 1100px; margin: 0 auto; padding: 0 16px; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
-.brand { display: flex; align-items: center; gap: 12px; }
-.logo-box { width: 56px; height: 56px; border: 2px solid #222; display: grid; place-items: center; font-weight: 700; font-size: 12px; }
-.brandname { font-size: 22px; font-weight: 700; }
-.topbar__right { text-align: right; }
-.navlinks { font-size: 15px; }
-.user-info { font-size: 14px; margin-top: 6px; }
-
-/ Buttons /
-.btn { display: inline-block; padding: 8px 12px; border: 2px solid #222; border-radius: 3px; text-decoration: none; color: #000; background: #fff; }
-.btn--big { padding: 14px 22px; font-weight: 700; }
-.action-link { margin-left: 6px; }
-
-/ Filters layout like mockup */
-.filters h2 { margin: 0 0 12px; font-size: 18px; }
-.filters-layout {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr auto;
-    gap: 18px;
-    align-items: start;
-}
-
-.filters-left .row { display: grid; grid-template-columns: 220px 1fr; gap: 10px; align-items: center; margin-bottom: 10px; }
-.filters-left label { font-weight: 700; }
-.filters-left input, .filters-left select {
-    padding: 8px;
-    border: 2px solid #222;
-    border-radius: 3px;
-}
-
-.row-inline { grid-template-columns: 220px 1fr auto 1fr; }
-.inline-text { padding: 0 10px; }
-
-.filters-middle { display: grid; gap: 10px; padding-top: 8px; }
-.check { display: flex; gap: 10px; align-items: center; }
-
-.filters-right { display: flex; justify-content: flex-end; align-items: center; }
-/* Table like mockup /
-.table-wrap { overflow-x: auto; }
-.table { width: 100%; border-collapse: collapse; }
-.table th, .table td { border: 2px solid #222; padding: 8px; text-align: left; vertical-align: top; }
-.table th { background: #f1f1f1; white-space: nowrap; }
-
-/ Bottom left create button /
-.create-sortie { margin-top: 14px; }
-
-/ Responsive */
-@media (max-width: 900px) {
-    .topbarinner { flex-direction: column; align-items: flex-start; }
-    .topbarright { text-align: left; }
-    .filters-layout { grid-template-columns: 1fr; }
-    .filters-left .row, .row-inline { grid-template-columns: 1fr; }
-    .filters-right { justify-content: flex-start; }
-}
-
+/* Grilles pour la page de Détail (Sortie) - Conservé pour ne pas casser la vue détail */
 .sortie-detailcols {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 18px 60px;
 }
 
-.row {
-    display: grid;
-    grid-template-columns: 240px 1fr;
-    gap: 12px;
-    padding: 6px 0;
-}
-
-.row--wide {
-    margin-top: 10px;
-}
-
-.label { font-weight: 700; }
-.value { min-height: 22px; }
-
-.bottom-area {
-    margin-top: 18px;
-    display: flex;
-    justify-content: flex-start;
-}
-
 .participants-box {
-    width: 340px;
-    border: 2px solid #222;
-    padding: 10px;
-    border-radius: 4px;
-}
-
-.participants-boxtitle {
-    margin: 0 0 8px;
-    font-size: 16px;
-}
-
-.table--mini {
     width: 100%;
+    max-width: 340px;
+    border: 1px solid #e0e0e0;
+    padding: 15px;
+    border-radius: 8px;
+    background: #fff;
+}
+
+/* Bouton "Créer une sortie" (Centré et stylé) */
+.create-sortie {
+    margin-top: 30px;
+    text-align: center;
+    clear: both;
+}
+
+.create-sortie .btn-secondary {
+    background-color: #6c757d;
+    border: none;
+    padding: 12px 30px;
+    font-size: 1rem;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    color: white;
+    transition: all 0.3s;
+    display: inline-block;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.create-sortie .btn-secondary:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+}
+
+/* ==========================================================================
+   4. FILTRES MODERNES (Style "Card" Blanc)
+   (Remplace l'ancien style .well pour coller à ta maquette blanche)
+   ========================================================================== */
+
+/* On applique le style "Carte Blanche" à .card et .well (ton HTML utilise well) */
+.card, .well {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    padding: 30px;
+    margin-bottom: 40px;
+}
+
+/* Titre des filtres avec la ligne bleue */
+.filters h2, h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #0d6efd;
+    display: block;
+    width: 100%;
+    margin-top: 0;
+}
+
+/* Labels */
+.filters label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    display: block;
+}
+
+/* Champs (Input & Select) */
+.filters .form-control,
+input[type="text"],
+input[type="date"],
+select {
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    color: #212529;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.filters .form-control:focus,
+input:focus,
+select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    outline: 0;
+}
+
+/* Checkboxes */
+.filters .form-check {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.filters .form-check-input {
+    width: 1.2em;
+    height: 1.2em;
+    margin-right: 10px;
+    border: 1px solid #adb5bd;
+    cursor: pointer;
+}
+
+.filters .form-check-label {
+    cursor: pointer;
+    font-weight: 400;
+}
+
+/* Bouton Rechercher (Bleu) */
+.filters .btn-primary {
+    background-color: #0d6efd;
+    border: 1px solid #0d6efd;
+    color: white;
+    font-weight: 500;
+    padding: 10px 40px;
+    font-size: 1rem;
+    border-radius: 6px;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.filters .btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+/* ==========================================================================
+   5. TABLEAU MODERNE (Style "Dark Header")
+   (Remplace l'ancien tableau pour coller à ta maquette sombre/verte)
+   ========================================================================== */
+
+.table-wrap {
+    background: #fff;
+    border-radius: 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 0;
     border-collapse: collapse;
 }
 
-.table--mini th,
-.table--mini td {
-    border-bottom: 1px solid #ddd;
-    padding: 8px;
+/* Entête sombre */
+.table thead th {
+    background-color: #343a40;
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 15px;
+    border: 1px solid #454d55;
+    white-space: nowrap;
+    vertical-align: middle;
 }
 
+/* Corps du tableau */
+.table tbody td {
+    padding: 16px 15px;
+    vertical-align: middle;
+    border: 1px solid #dee2e6;
+    color: #212529;
+    font-size: 0.95rem;
+}
+
+/* Effet zébré */
+.table tbody tr:nth-of-type(even) {
+    background-color: #f8f9fa;
+}
+
+/* Effet survol */
+.table tbody tr:hover {
+    background-color: #e9ecef;
+}
+
+/* Liens dans le tableau */
+.table a {
+    color: #0d6efd;
+    font-weight: 500;
+    text-decoration: underline;
+}
+
+.table a:hover {
+    color: #0a58ca;
+}
+
+/* --- BADGES (Inscrits / État) --- */
+.badge {
+    display: inline-block;
+    padding: 0.4em 0.7em;
+    font-size: 0.75em;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+}
+
+.bg-success { background-color: #198754 !important; }
+.bg-danger { background-color: #dc3545 !important; }
+
+/* --- ALIGNEMENTS SPÉCIFIQUES --- */
+/* Par défaut tout à gauche */
+.table th, .table td { text-align: left; }
+
+/* Centrer les colonnes chiffres et états (Colonnes 4 et 6) */
+.table th:nth-child(4), .table td:nth-child(4),
+.table th:nth-child(6), .table td:nth-child(6) {
+    text-align: center;
+}
+
+/* Actions */
+.action-link {
+    margin-right: 10px;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.text-danger { color: #dc3545 !important; }
+
+/* ==========================================================================
+   6. RESPONSIVE (Mobile)
+   ========================================================================== */
 @media (max-width: 900px) {
-    .sortie-detail__cols { grid-template-columns: 1fr; }
+    .header-top { justify-content: center; flex-wrap: wrap; }
+    .filters-layout { grid-template-columns: 1fr; }
+    .sortie-detailcols { grid-template-columns: 1fr; }
     .row { grid-template-columns: 1fr; }
-    .participants-box { width: 100%; }
-}
-
-.topbar {
-    text-align: right;
-}
-
-
-.user-info {
-
+    .participants-box { width: 100%; max-width: none; }
+    .admin-alert { float: none; margin: 0 auto 20px auto; }
 }

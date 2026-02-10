@@ -60,7 +60,7 @@
             {{ form_row(form.nbInscriptionMax) }}
             {{ form_row(form.duree) }}
 
-{#            {{ form_widget(form.name) }}#}
+{#            {{ form_widget(form.name) }} #}
 {#            {{ form_widget(form.dateHeureDebut) }}#}
 {#            {{ form_widget(form.dateLimiteInscription) }}#}
 {#            {{ form_widget(form.nbInscriptionMax) }}#}
@@ -71,6 +71,7 @@
             {{ form_row(form.campus, {'label': 'Campus', attr: {
                 'disabled': 'disabled'
             }}) }}
+            {{ form_row(form.ville) }}
             {{ form_row(form.lieu ,{'label': 'Lieu'}) }}
             <div class="mb-3">
                 <label class="form-label">Rue</label>
@@ -113,9 +114,8 @@
             let campusId = {{ app.user.campus.id }}
 
 
-            let campus = document.getElementById('sortie_form_campus');
-            campus.value = campusId;
-            console.log(campusId);
+            let campus = document.getElementById('sortie_form_campus')
+            campus.value = campusId
 
             let lieu = document.getElementById('sortie_form_lieu')
             changeDataAjax ()
@@ -156,21 +156,34 @@
                     })
             }
 
+            let ville = document.getElementById('sortie_form_ville')
+            ville.addEventListener('change', function() {
+                villeAjax()
 
-            {#lieu.addEventListener('change', () => {#}
-            {#    let value = lieu.value#}
-            {#    fetch("{{ path('lieu_detail_ajax') }}").then(response => {#}
-            {#        if (!response.ok) {#}
-            {#            throw new Error('Erreur réseau');#}
-            {#        }#}
-            {#        return response.json();#}
-            {#    })#}
-            {#        .then(data => {#}
-            {#            console.log(data);#}
-            {#            // data = ton JSON Symfony#}
-            {#        })#}
+            })
 
-            {#})#}
+
+            function villeAjax () {
+                let id = ville.value
+                fetch('{{ path('ville_ajax', { id: 'ID_PLACEHOLDER' }) }}'.replace('ID_PLACEHOLDER', id))
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erreur réseau');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log(data);
+                        lieu.innerHTML = ""
+                        for (let i = 0; i < data.length; i++) {
+                            let item = document.createElement('option');
+                            item.text = data[i].name;
+                            item.setAttribute('value', data[i].id );
+                            lieu.append(item);
+                        }
+                    })
+            }
+
         }
 
 

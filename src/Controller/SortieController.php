@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Lieu;
 use App\Entity\Sortie;
 use App\Entity\User;
+use App\Entity\Ville;
 use App\Form\SortieFormType;
 use App\Repository\CampusRepository;
 use App\Repository\LieuRepository;
@@ -457,5 +458,17 @@ class SortieController extends AbstractController
         ]);
     }
 
+#[Route('/ajax/ville/{id}', name: 'ville_ajax', methods: ['GET'])]
+public function VilleAjax(Ville $ville, LieuRepository $lieuRepository): Response
+{
+
+    # methode a changer
+    $lieu2 = $lieuRepository->findBy(
+        ['ville' => $ville->getId()]
+    );
+    return $this->json($lieu2, 200, [], [
+        'groups' => ['post:read'],
+    ]);
+}
 
 }

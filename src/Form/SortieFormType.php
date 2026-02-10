@@ -7,6 +7,8 @@ use App\Entity\Etat;
 use App\Entity\Lieu;
 use App\Entity\Sortie;
 use App\Entity\User;
+use App\Entity\Ville;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -44,6 +46,18 @@ class SortieFormType extends AbstractType
                 'class' => Lieu::class,
                 'choice_label' => 'name',
             ])
+            ->add('ville', EntityType::class, [
+                'label' => 'Ville',
+                'class' => Ville::class,
+                'required' => false,
+                'choice_label' => 'name',
+                'mapped' => false,
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('v')
+                        ->orderBy('v.name', 'ASC');
+                },
+            ])
+
             //->add('etat', EntityType::class, [
             //    'class' => Etat::class,
             //   'choice_label' => 'libelle',

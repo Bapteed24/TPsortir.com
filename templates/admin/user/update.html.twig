@@ -36,8 +36,18 @@
     <div>
         {% form_theme registrationForm 'bootstrap_5_layout.html.twig' %}
         {{ form_start(registrationForm) }}
-        {{ form_widget(registrationForm) }}
-        <button type="submit" class="btn btn-success">S’inscrire</button>
+        {{ form_row(registrationForm.email) }}
+        {{ form_row(registrationForm.name) }}
+        {{ form_row(registrationForm.firstname) }}
+        {{ form_row(registrationForm.plainPassword, {'required': false} )}}
+        {{ form_row(registrationForm.telephone) }}
+        {{ form_row(registrationForm.isAdmin) }}
+        {{ form_row(registrationForm.isActif) }}
+        {{ form_row(registrationForm.campus) }}
+        {{ form_row(registrationForm.photo) }}
+
+        <button type="submit" class="btn btn-succe  ss">S’inscrire</button>
         {{ form_end(registrationForm) }}
     </div>
+    {{ dump() }}
 {% endblock %}

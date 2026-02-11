@@ -40,4 +40,16 @@ class VilleRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function searchVilleWithParameter($parameter = null) {
+        $query = $this->createQueryBuilder('v');
+
+        if (isset($parameter['name'])) {
+            $query->andWhere('v.name LIKE :name')
+                ->setParameter('name', '%'.$parameter['name'].'%');
+        }
+
+        return $query->getQuery()->getResult();
+    }
+
 }

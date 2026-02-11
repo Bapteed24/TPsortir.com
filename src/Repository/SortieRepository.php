@@ -55,10 +55,12 @@ class SortieRepository extends ServiceEntityRepository
 
             $now = new \DateTime();
 
-//            $now->modify('-30 day');
-//            $query->andWhere('s.dateHeureDebut > :now')
-//                    ->setParameter('now', $now);
+            $now->modify('-30 day');
 
+            $query->andWhere('s.dateHeureDebut > :now')
+                    ->setParameter('now', $now);
+
+            $query->addOrderBy('s.dateHeureDebut', 'ASC');
 
 //            $query->andWhere('s.name LIKE :name')
 //                   ->setParameter('name', '%2%');

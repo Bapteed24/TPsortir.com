@@ -165,6 +165,7 @@
 
             function villeAjax () {
                 let id = ville.value
+
                 fetch('{{ path('ville_ajax', { id: 'ID_PLACEHOLDER' }) }}'.replace('ID_PLACEHOLDER', id))
                     .then(response => {
                         if (!response.ok) {
@@ -174,12 +175,27 @@
                     })
                     .then(data => {
                         console.log(data);
-                        lieu.innerHTML = ""
+
+
+                        lieu.innerHTML = "";
+
+
                         for (let i = 0; i < data.length; i++) {
                             let item = document.createElement('option');
-                            item.text = data[i].name;
-                            item.setAttribute('value', data[i].id );
+                            item.textContent = data[i].name;
+                            item.value = data[i].id;
                             lieu.append(item);
+                        }
+
+
+                        if (data.length > 0) {
+                            lieu.value = data[0].id;
+                            changeDataAjax();
+                        } else {
+
+                            document.getElementById('street').textContent = '';
+                            document.getElementById('codePostal').textContent = '';
+                            document.getElementById('latLon').textContent = '';
                         }
                     })
             }

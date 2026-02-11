@@ -39,11 +39,16 @@
             margin-bottom: 20px;
             text-align: right;
         }
+        .filter-div {
+            display:flex;
+            justify-content: space-between;
+            margin-bottom:10px;
+        }
     </style>
 {% endblock %}
 
 {% block body %}
-    <div>
+<div>
         <h1>Liste des campus</h1>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
@@ -59,15 +64,22 @@
                 </div>
             {% endfor %}
         {% endfor %}
-        <div class="add-div">
-            <a href="{{ path('app_admin_campus_create') }}" class="btn btn-secondary">Créer un nouveau campus</a>
-        </div>
+        <form class="filter-div">
+            <label>Le nom contient :
+                <input type="text" name="q" {% if  app.request.query.get('q') is defined %}value="{{ app.request.query.get('q') }}"
+                        {% endif %}></label>
+            <button type="submit" class="btn btn-sm btn-outline-primary">Rechercher</button>
+{#            <a href="{{ path('app_admin_campus_create') }}" class="btn btn-secondary">Créer un nouveau campus</a>#}
+        </form>
+
+
         <table>
             <thead>
             <th>Id</th>
             <th>Nom</th>
             <th>Actions</th>
             </thead>
+            <tbody>
             {% for c in campus %}
                 <tr>
                     <td>{{ c.id }}</td>
@@ -82,8 +94,33 @@
                         </button>
                     </td></tr>
             {% endfor %}
+            <tr>
+                <td></td>
+                <td><input id="input-table" type="text"></td>
+                <td>
+                    <button class="btn btn-sm btn-secondary" type="submit" id="table-btn-submit">Ajouter</button>
+                </td>
+            </tr>
+            </tbody>
         </table>
+        </div>
+
+    <div style="display:none">
+        {{ form_start(form, {
+            'action': path('app_admin_campus_create'),
+            'method': 'POST',
+            'attr': {
+                'id': 'mon_formulaire'
+            }
+        }) }}
+        {{ form_widget(form.name) }}
+        <button type="submit" name="action" value="publish" class="btn btn-success">
+            Publier
+        </button>
+        {{ form_end(form) }}
     </div>
+
+
 
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -119,7 +156,7 @@
     </div>
 
 {% endblock %}
-{% block javascripts%}
+{% block javascripts %}
     <script>
         window.onload = function() {
             const deleteModal = document.getElementById('confirmDeleteModal');
@@ -136,8 +173,21 @@
                 form.action = url;
                 tokenInput.value = token;
             });
+
+
+
+            document.getElementById('table-btn-submit').addEventListener('click', function () {
+                let inputSource = document.getElementById('input-table');
+                let inputTarget = document.getElementById(('campus_form_name'))
+                inputTarget.value = inputSource.value
+
+                document.getElementById('mon_formulaire').submit();
+
+            })
         }
 
     </script>
+    <script>
 
+    </script>
 {% endblock %}

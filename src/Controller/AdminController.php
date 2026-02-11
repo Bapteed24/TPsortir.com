@@ -210,11 +210,21 @@ final class AdminController extends AbstractController
     }
 
     #[Route('/campus/list', name: 'app_admin_campus_list')]
-    public function listeCampus(CampusRepository $campusRepository): Response
+    public function listeCampus(CampusRepository $campusRepository, Request $request): Response
     {
-        $campus = $campusRepository->findAll();
+        $parameter = [];
+        $query = $request->query->get('q');
+        if($query) {
+            $parameter['name'] = $query;
+        }
+        $campus = $campusRepository->searchCampusWithParameter($parameter);
+
+        $newCampus = new Campus();
+        $form = $this->createForm(CampusFormType::class, $newCampus);
+
         return $this->render('admin/campus/list.html.twig', [
             'campus' => $campus,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -307,12 +317,24 @@ final class AdminController extends AbstractController
 
 
     #[Route('/ville/list', name: 'app_admin_ville_list')]
-    public function villeCampus(VilleRepository $villeRepository): Response
+    public function villeCampus(VilleRepository $villeRepository, Request $request): Response
     {
-        $ville = $villeRepository->findAll();
+
+        $parameter = [];
+        $query = $request->query->get('q');
+        if($query) {
+            $parameter['name'] = $query;
+        }
+        $ville = $villeRepository->searchVilleWithParameter($parameter);
+
+        $newVille = new Ville();
+        $form = $this->createForm(VilleFormType::class, $newVille);
+
         return $this->render('admin/ville/list.html.twig', [
             'villes' => $ville,
+            'form' => $form->createView(),
         ]);
+
     }
 
     #[Route('/ville/ajouer', name: 'app_admin_ville_create')]

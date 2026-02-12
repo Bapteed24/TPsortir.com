@@ -42,15 +42,71 @@
         .info-block > div > div {
             width: 100%;
         }
+
+        /* ===== Popup (sans Bootstrap) ===== */
+        .hidden { display:none; }
+
+        .panel {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.35);
+            display: none;
+            place-items: center;
+            z-index: 1000;
+        }
+
+        .panel.active {
+            display: grid;
+        }
+
+        .panel-box {
+            width: min(520px, 92vw);
+            background: #fff;
+            border-radius: 10px;
+            padding: 16px;
+        }
+        .panel-head {
+            display:flex;
+            align-items:center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .panel-head h3 { margin: 0; font-size: 18px; }
+        .panel-head button { font-size: 18px; background: transparent; border: none; cursor:pointer; }
+
+        .row { margin: 10px 0; display:flex; flex-direction:column; gap:6px; }
+        input, select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .actions { display:flex; justify-content:flex-end; gap:10px; margin-top: 14px; }
+
+        .errors {
+            border: 1px solid #e57373;
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+
+        /* bouton à côté du select lieu */
+        .lieu-line {
+            display:flex;
+            gap:10px;
+            align-items:center;
+        }
+        .lieu-line > *:first-child { flex: 1; }
     </style>
 {% endblock %}
+
 {% block body %}
     <section>
         <h1>Crée une sortie</h1>
     </section>
 
-{#    {{ dump(app.user.campus.name) }}#}
-{#{% form_theme form 'bootstrap_5_layout.html.twig' %}#}
     <form action="" method="post">
         {{ form_start(form) }}
         <div class="item colonne-1">
@@ -59,20 +115,28 @@
             {{ form_row(form.dateLimiteInscription )}}
             {{ form_row(form.nbInscriptionMax) }}
             {{ form_row(form.duree) }}
-
-{#            {{ form_widget(form.name) }} #}
-{#            {{ form_widget(form.dateHeureDebut) }}#}
-{#            {{ form_widget(form.dateLimiteInscription) }}#}
-{#            {{ form_widget(form.nbInscriptionMax) }}#}
-{#            {{ form_widget(form.duree) }}#}
         </div>
+
         <div class="item colonne-2">
 
             {{ form_row(form.campus, {'label': 'Campus', attr: {
                 'disabled': 'disabled'
             }}) }}
+
             {{ form_row(form.ville) }}
-            {{ form_row(form.lieu ,{'label': 'Lieu'}) }}
+
+            {# === Lieu + bouton popup === #}
+            <div class="mb-3">
+                {{ form_label(form.lieu, 'Lieu') }}
+                <div class="lieu-line">
+                    {{ form_widget(form.lieu, {'attr': {'id': 'sortie_form_lieu'}}) }}
+                    <button type="button" id="openLieuForm" class="btn btn-secondary">
+                        + Ajouter un lieu
+                    </button>
+                </div>
+                {{ form_errors(form.lieu) }}
+            </div>
+
             <div class="mb-3">
                 <label class="form-label">Rue</label>
                 <span id="street"></span>
@@ -86,6 +150,7 @@
                 <span id="latLon"></span>
             </div>
         </div>
+
         <div class="item info-block">
             <div>
                 {{ form_row(form.infoSortie) }}
@@ -103,82 +168,105 @@
                 </a>
             </div>
         </div>
+
+        {{ form_end(form) }}
     </form>
-    {{ form_end(form) }}
+
+    {# ===== Popup Ajout Lieu (sans ville/cp/lat/lon) ===== #}
+    <div id="lieuPanel" class="panel" aria-hidden="true">
+        <div class="panel-box">
+            <div class="panel-head">
+                <h3>Ajouter un lieu</h3>
+                <button type="button" id="closeLieuForm" aria-label="Fermer">✕</button>
+            </div>
+
+            <div id="lieuErrors" class="errors hidden"></div>
+            <input type="hidden" id="lieu_csrf" value="{{ csrf_token('create_lieu') }}">
+
+            <div class="row">
+                <label for="lieu_name">Nom</label>
+                <input id="lieu_name" type="text">
+            </div>
+
+            <div class="row">
+                <label for="lieu_street">Rue</label>
+                <input id="lieu_street" type="text">
+            </div>
+
+            <div class="row">
+                <label>Ville</label>
+                <input id="lieu_ville_label" type="text" disabled>
+                <small>La ville dépend du champ "Ville" du formulaire.</small>
+            </div>
+            <div class="row" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div>
+                    <label for="lieu_lat">Latitude</label>
+                    <input id="lieu_lat" type="number" step="any" required>
+                </div>
+                <div>
+                    <label for="lieu_lon">Longitude</label>
+                    <input id="lieu_lon" type="number" step="any" required>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button type="button" id="cancelLieu" class="btn btn-secondary">Annuler</button>
+                <button type="button" id="saveLieu" class="btn btn-success">Enregistrer</button>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block javascripts %}
     <script>
         window.onload = function() {
 
-            let campusId = {{ app.user.campus.id }}
+            let campusId = {{ app.user.campus.id }};
 
+            let campus = document.getElementById('sortie_form_campus');
+            campus.value = campusId;
 
-            let campus = document.getElementById('sortie_form_campus')
-            campus.value = campusId
+            let lieu = document.getElementById('sortie_form_lieu');
 
-            let lieu = document.getElementById('sortie_form_lieu')
-            changeDataAjax ()
+            // ====== détails lieu ======
+            changeDataAjax();
             lieu.addEventListener('change', () => {
-                changeDataAjax ()
-                {#let id = lieu.value#}
-                {#fetch('{{ path('lieu_detail_ajax', { id: 'ID_PLACEHOLDER' }) }}'.replace('ID_PLACEHOLDER', id))#}
-                {#    .then(response => {#}
-                {#        if (!response.ok) {#}
-                {#            throw new Error('Erreur réseau');#}
-                {#        }#}
-                {#        return response.json();#}
-                {#    })#}
-                {#    .then(data => {#}
-                {#        console.log(data);#}
-                {#        document.getElementById('street').innerHTML = data.street#}
-                {#        document.getElementById('codePostal').innerHTML = data.codePostal#}
-                {#        document.getElementById('latLon').innerHTML = data.latitude + ' - ' + data.longitute#}
-                {#        // data = ton JSON Symfony#}
-                {#    })#}
-            })
+                changeDataAjax();
+            });
 
             function changeDataAjax () {
-                let id = lieu.value
+                let id = lieu.value;
+                if (!id) return;
+
                 fetch('{{ path('lieu_detail_ajax', { id: 'ID_PLACEHOLDER' }) }}'.replace('ID_PLACEHOLDER', id))
                     .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Erreur réseau');
-                        }
+                        if (!response.ok) throw new Error('Erreur réseau');
                         return response.json();
                     })
                     .then(data => {
-                        console.log(data);
-                        document.getElementById('street').innerHTML = data.street
-                        document.getElementById('codePostal').innerHTML = data.codePostal
-                        document.getElementById('latLon').innerHTML = data.latitude + ' - ' + data.longitute
-                        // data = ton JSON Symfony
-                    })
+                        document.getElementById('street').innerHTML = data.street ?? '';
+                        document.getElementById('codePostal').innerHTML = data.codePostal ?? '';
+                        document.getElementById('latLon').innerHTML =
+                            (data.latitude ?? '') + ' - ' + (data.longitute ?? '');
+                    });
             }
 
-            let ville = document.getElementById('sortie_form_ville')
+            // ====== lieux par ville ======
+            let ville = document.getElementById('sortie_form_ville');
             ville.addEventListener('change', function() {
-                villeAjax()
-
-            })
-
+                villeAjax();
+            });
 
             function villeAjax () {
-                let id = ville.value
+                let id = ville.value;
 
                 fetch('{{ path('ville_ajax', { id: 'ID_PLACEHOLDER' }) }}'.replace('ID_PLACEHOLDER', id))
                     .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Erreur réseau');
-                        }
+                        if (!response.ok) throw new Error('Erreur réseau');
                         return response.json();
                     })
                     .then(data => {
-                        console.log(data);
-
-
                         lieu.innerHTML = "";
-
 
                         for (let i = 0; i < data.length; i++) {
                             let item = document.createElement('option');
@@ -187,12 +275,10 @@
                             lieu.append(item);
                         }
 
-
                         if (data.length > 0) {
                             lieu.value = data[0].id;
                             changeDataAjax();
                         } else {
-
                             document.getElementById('street').textContent = '';
                             document.getElementById('codePostal').textContent = '';
                             document.getElementById('latLon').textContent = '';
@@ -200,10 +286,120 @@
                     })
             }
 
+            // ====== popup + création lieu ajax ======
+            const openBtn = document.getElementById('openLieuForm');
+            const closeBtn = document.getElementById('closeLieuForm');
+            const cancelBtn = document.getElementById('cancelLieu');
+            const saveBtn = document.getElementById('saveLieu');
+
+            const panel = document.getElementById('lieuPanel');
+            const errorsBox = document.getElementById('lieuErrors');
+
+            function openPanel() {
+                const villeSelect = document.getElementById('sortie_form_ville');
+                const villeLabel = villeSelect.options[villeSelect.selectedIndex]?.text ?? '';
+                document.getElementById('lieu_ville_label').value = villeLabel;
+
+                errorsBox.classList.add('hidden');
+                errorsBox.innerHTML = '';
+
+                panel.classList.add('active');            // ✅
+                panel.setAttribute('aria-hidden', 'false');
+            }
+
+            function closePanel() {
+                panel.classList.remove('active');         // ✅
+                panel.setAttribute('aria-hidden', 'true');
+
+                errorsBox.classList.add('hidden');
+                errorsBox.innerHTML = '';
+            }
+
+
+            function showErrors(message, errors = null) {
+                let html = `<strong>${message}</strong>`;
+                if (errors) {
+                    html += '<ul>';
+                    for (const [field, msgs] of Object.entries(errors)) {
+                        msgs.forEach(m => html += `<li>${field} : ${m}</li>`);
+                    }
+                    html += '</ul>';
+                }
+                errorsBox.innerHTML = html;
+                errorsBox.classList.remove('hidden');
+            }
+
+            function val(id) { return document.getElementById(id).value; }
+            function setVal(id, v) { document.getElementById(id).value = v; }
+
+            openBtn.addEventListener('click', openPanel);
+            closeBtn.addEventListener('click', closePanel);
+            cancelBtn.addEventListener('click', closePanel);
+
+            panel.addEventListener('click', (e) => {
+                if (e.target === panel) closePanel();
+            });
+
+            saveBtn.addEventListener('click', async () => {
+                errorsBox.classList.add('hidden');
+                errorsBox.innerHTML = '';
+                saveBtn.disabled = true;
+
+                const villeSelect = document.getElementById('sortie_form_ville');
+                const villeId = villeSelect.value;
+
+                if (!villeId) {
+                    showErrors("Choisis d'abord une ville dans le formulaire.");
+                    saveBtn.disabled = false;
+                    return;
+                }
+
+                const payload = {
+                    _token: val('lieu_csrf'),
+                    name: val('lieu_name'),
+                    street: val('lieu_street'),
+                    villeId: villeId,
+                    latitude: val('lieu_lat'),
+                    longitude: val('lieu_lon'),
+                };
+
+                try {
+                    const res = await fetch('{{ path('lieu_create_ajax') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await res.json().catch(() => ({}));
+                    console.log('STATUS', res.status);
+                    console.log('RESPONSE', data);
+
+
+                    if (!res.ok) {
+                        showErrors(data.message || 'Erreur', data.errors || null);
+                        showErrors((data.message || 'Erreur') + ' (HTTP ' + res.status + ')', data.errors || null);
+
+                        return;
+                    }
+
+                    const opt = new Option(data.name, data.id, true, true);
+                    lieu.add(opt);
+                    lieu.dispatchEvent(new Event('change'));
+
+                    setVal('lieu_name', '');
+                    setVal('lieu_street', '');
+
+                    closePanel();
+
+                } catch (e) {
+                    showErrors("Erreur réseau : impossible de contacter l'API.");
+                } finally {
+                    saveBtn.disabled = false;
+                }
+            });
         }
-
-
-
     </script>
-
 {% endblock %}

@@ -28,6 +28,10 @@ class RegistrationFormType extends AbstractType
                 'label' => 'Nom',
                 'required' => false
             ])
+            ->add('username', TextType::class, [
+                'label' => 'Pseudo',
+                'required' => false
+            ])
             ->add('firstname', TextType::class, [
                 'label' => 'Prénom',
                 'required' => false

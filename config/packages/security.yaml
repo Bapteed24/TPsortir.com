@@ -11,11 +11,9 @@ security:
         property: email
 
   firewalls:
-
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
-
     # 🔐 LOGIN (DOIT être avant api)
     login:
       pattern: ^/api/login$
@@ -57,3 +55,4 @@ security:
     - { path: ^/login, roles: PUBLIC_ACCESS }
     - { path: ^/logout, roles: PUBLIC_ACCESS }
     - { path: ^/, roles: ROLE_USER }
+    - { path: ^/_wdt, roles: PUBLIC_ACCESS }

@@ -59,10 +59,20 @@
         {% endfor %}
     {% endfor %}
     <div class="add-div">
+    
+    <a class="btn btn-secondary" href="{{ path('admin_utilisateur_import') }}">
+    Import CSV
+</a>
         <a href="{{ path('app_admin_user_create') }}" class="btn btn-secondary">Créer un nouvelle utilisateur</a>
     </div>
+    
+    <form method="post" action="{{ path('app_admin_user_delete_selected') }}">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete_selected_users') }}">
+
+
     <table>
         <thead>
+    <th></th>
             <th>Id</th>
             <th>Nom</th>
             <th>Prénom</th>
@@ -70,8 +80,12 @@
             <th></th>
         </thead>
         <tbody>
+     
+
             {% for user in users %}
-                <tr>
+                <tr>   <td>
+    <input type="checkbox" name="ids[]" value="{{ user.id }}" class="userCheckbox">
+</td>
                     <td>{{ user.id}}</td>
                     <td>{{ user.name}}</td>
                     <td>{{ user.firstname}}</td>
@@ -89,6 +103,11 @@
             {% endfor  %}
         </tbody>
     </table>
+    <button class="btn btn-danger mt-2" onclick="return confirm('Supprimer les utilisateurs sélectionnés ?');">
+    Supprimer sélection
+</button>
+</form>
+
 </div>
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">

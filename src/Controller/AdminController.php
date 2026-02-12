@@ -118,23 +118,78 @@ final class AdminController extends AbstractController
         UserRepository $userRepository,
     ): Response
     {
-        $errors = 0;
+         $errors = 0;
 
         $userWithSortie = $userRepository->checkUserWithSortie($user->getId());
 
         if ($userWithSortie) {
             $errors++;
-            $this->addFlash('danger', "Impossible de supprimer l'utisateur'. Supprimer les sorties lié pour pouvoir le supprimer. Préférer mettre le compte en inactif.");
+            $this->addFlash('danger', "Suppression impossible : utilisateur présent dans une ou plusieurs sorties.");
         }
         if ($errors > 0) {
             return $this->redirectToRoute('app_admin_user_list');
-        }
+        } 
+
+        
+    if ($user->getSorties()->count() > 0 || $user->getSortiesOrganisees()->count() > 0) {
+        $this->addFlash('danger', "Suppression impossible : utilisateur présent dans une ou plusieurs sorties (participant ou organisateur).");
+        return $this->redirectToRoute('app_admin_user_list');
+    }
+        
         $entityManager->remove($user);
         $entityManager->flush();
 
         // Redirection après inscription
         return $this->redirectToRoute('app_admin_user_list');
     }
+
+    #[Route('/utilisateur/supprimer-selection', name: 'app_admin_user_delete_selected', methods: ['POST'])]
+public function adminUserDeleteSelected(
+    Request $request,
+    EntityManagerInterface $entityManager,
+    UserRepository $userRepository
+): Response {
+    if (!$this->isCsrfTokenValid('delete_selected_users', $request->request->get('_token'))) {
+        throw $this->createAccessDeniedException();
+    }
+
+    $ids = $request->request->all('ids'); // ids[] depuis les checkboxes
+
+    if (empty($ids)) {
+        $this->addFlash('warning', 'Aucun utilisateur sélectionné.');
+        return $this->redirectToRoute('app_admin_user_list');
+    }
+
+    $deleted = 0;
+    $skipped = 0;
+
+    foreach ($ids as $id) {
+        $user = $userRepository->find((int)$id);
+        if (!$user) {
+            $skipped++;
+            continue;
+        }
+
+        // Règle métier : pas dans des sorties
+        if ($user->getSorties()->count() > 0 || $user->getSortiesOrganisees()->count() > 0) {
+            $skipped++;
+            continue;
+        }
+
+        $entityManager->remove($user);
+        $deleted++;
+    }
+
+    $entityManager->flush();
+
+    $this->addFlash('success', "$deleted utilisateur(s) supprimé(s) ✅");
+    if ($skipped > 0) {
+        $this->addFlash('info', "$skipped utilisateur(s) ignoré(s) car liés à des sorties.");
+    }
+
+    return $this->redirectToRoute('app_admin_user_list');
+}
+
 
     #[Route('/sortie/list', name: 'app_admin_sortie_list')]
     public function listSortie(SortieRepository $sortieRepository): Response
@@ -421,4 +476,6 @@ final class AdminController extends AbstractController
 
         return $this->redirectToRoute('app_admin_ville_list');
     }
+
+    
 }

@@ -79,7 +79,7 @@ final class AdminController extends AbstractController
         ]);
     }
 
-    #[Route('/utilisateur/modifier/{id}', name: 'adminUserUpdate', requirements: ['id' => '\d+'], methods: ['GET'])]
+    #[Route('/utilisateur/modifier/{id}', name: 'adminUserUpdate', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function adminUserUpdate(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -93,10 +93,10 @@ final class AdminController extends AbstractController
         $form->handleRequest($request);
         // Soumission + validation
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            // ⚠️ Ici tu hash normalement le mot de passe
-            // (je peux te le rajouter si tu veux)
-
+        if ($form->isSubmitted() ) {
+            if ($request->query->get('registration_form[plainPassword]') == "" or $request->query->get('registration_form[plainPassword]') == null) {
+                $user->setPassword($user->getPassword());
+            }
             $entityManager->persist($user);
             $entityManager->flush();
 

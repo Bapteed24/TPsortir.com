@@ -1,11 +1,21 @@
 {#{% extends 'admin/base-admin.html.twig' %}#}
 {% extends 'base.html.twig' %}
 {% block stylesheets %}
+    <style>
+        #block-choice {
+            display:flex;
+            justify-content: space-evenly;
+        }
+        #block-choice a{
+            text-decoration: none;
+        }
+
+    </style>
 {% endblock %}
 {% block title %}Hello AdminController!{% endblock %}
 
 {% block body %}
-    <h1>Dashboard</h1>
+    <h1>Page administration</h1>
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item active" aria-current="page">DashBoard</li>
@@ -13,11 +23,11 @@
     </nav>
 
 
-    <div>
-        <a href="{{ path('app_admin_user_list') }}">Gérer les utilisateurs</a><br>
-        <a href="{{ path('app_admin_sortie_list') }}">Gérer les sorties</a><br>
-        <a href="{{ path('app_admin_campus_list') }}">Gérer les campus</a><br>
-        <a href="{{ path('app_admin_ville_list') }}">Gérer les villes</a>
+    <div id="block-choice">
+        <a class="btn btn-outline-primary" href="{{ path('app_admin_user_list') }}">Gérer les utilisateurs</a><br>
+{#        <a href="{{ path('app_admin_sortie_list') }}">Gérer les sorties</a><br>#}
+        <a class="btn btn-outline-primary" href="{{ path('app_admin_campus_list') }}">Gérer les campus</a><br>
+        <a class="btn btn-outline-primary" href="{{ path('app_admin_ville_list') }}">Gérer les villes</a>
     </div>
 
 {% endblock %}

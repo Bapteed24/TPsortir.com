@@ -351,15 +351,15 @@ public function adminUserDeleteSelected(
     {
         $error = 0;
 
-        $users = $userRepository->findBy(["campus" => $campus->getId()]);
-        if ($users) {
-            $error++;
-            $this->addFlash('danger', 'Impossible de supprimer le campus. Veuillez supprimer les utilisateurs liés ou leur attribué un autre campus.');
-        }
-
-        if ($error > 0) {
-            return $this->redirectToRoute('app_admin_campus_list');
-        }
+//        $users = $userRepository->findBy(["campus" => $campus->getId()]);
+//        if ($users) {
+//            $error++;
+//            $this->addFlash('danger', 'Impossible de supprimer le campus. Veuillez supprimer les utilisateurs liés ou leur attribué un autre campus.');
+//        }
+//
+//        if ($error > 0) {
+//            return $this->redirectToRoute('app_admin_campus_list');
+//        }
 
         $entityManager->remove($campus);
         $entityManager->flush();

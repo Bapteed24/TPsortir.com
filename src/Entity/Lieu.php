@@ -14,23 +14,23 @@ class Lieu
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['post:read'])]
+    #[Groups(['post:read', 'public'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['post:read'])]
+    #[Groups(['post:read', 'public'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['post:read'])]
+    #[Groups(['post:read', 'public'])]
     private ?string $street = null;
 
     #[ORM\Column]
-    #[Groups(['post:read'])]
+    #[Groups(['post:read', 'public'])]
     private ?float $latitude = null;
 
     #[ORM\Column]
-    #[Groups(['post:read'])]
+    #[Groups(['post:read', 'public'])]
     private ?float $longitute = null;
 
     /**

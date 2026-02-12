@@ -76,6 +76,26 @@ class SortieRepository extends ServiceEntityRepository
 //                ->getResult()
 //            ;
         }
+        public function apiList($parameters): array {
+            $query = $this->createQueryBuilder('s');
+
+            if (isset($parameters['etat']) &&
+                !empty($parameters['etat']) &&
+                $parameters['etat'] != 1 &&
+                $parameters['etat'] != 5)
+            {
+                $query->where('s.etat = :etat')
+                      ->setParameter('etat', $parameters['etat']);
+            }
+            else {
+                $query->where('s.etat != :encours and s.etat != :termine')
+                    ->setParameter('encours', 1)
+                    ->setParameter('termine', 5);
+            }
+
+
+            return $query->getQuery()->getResult();
+        }
 
 
 }

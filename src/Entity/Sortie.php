@@ -5,66 +5,91 @@ namespace App\Entity;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\SortieRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use App\Controller\ApiSortieController;
 
-#[ApiResource]
-#[ApiFilter(SearchFilter::class, properties: ['etat' => '1'])]
+#[ApiResource(
+    operations: [
+        new GetCollection(), // endpoint standard
+        new GetCollection(
+            uriTemplate: '/testsortie',
+            controller: ApiSortieController::class,
+            read: false,
+            name: 'api_testsortie'
+        )
+    ]
+)]
 #[ORM\Entity(repositoryClass: SortieRepository::class)]
 class Sortie
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['main'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups(['main'])]
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Groups(['main'])]
     private ?\DateTimeImmutable $dateHeureDebut = null;
 
     // Option 1 (tu gardes TIME) :
     #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[Groups(['main'])]
     private ?\DateTime $duree = null;
 
     #[ORM\Column]
+    #[Groups(['public'])]
     private ?\DateTimeImmutable $dateLimiteInscription = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['public'])]
     private ?string $motifAnnulation = null;
 
     #[ORM\Column]
+    #[Groups(['public'])]
     private ?int $nbInscriptionMax = null;
 
     // Reco: TEXT plutôt que 255
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['public'])]
     private ?string $infoSortie = null;
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['public'])]
     private ?Campus $campus = null;
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['public'])]
     private ?Lieu $lieu = null;
 
     // IMPORTANT: Etat manquant (si UML le prévoit)
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['public'])]
     private ?Etat $etat = null;
 
     #[ORM\ManyToOne(inversedBy: 'sortiesOrganisees')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['public'])]
     private ?User $organisateurSortie = null;
 
     /**
      * @var Collection<int, User>
      */
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'sorties')]
+    #[Groups(['public'])]
     private Collection $participants;
 
     public function __construct()

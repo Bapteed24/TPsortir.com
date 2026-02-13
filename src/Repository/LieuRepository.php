@@ -48,7 +48,7 @@ class LieuRepository extends ServiceEntityRepository
             ->addSelect('l.id')
             ->addSelect('l.latitude')
             ->addSelect('l.street')
-            ->addSelect('l.longitute')
+            ->addSelect('l.longitude')
             ->addSelect('l.name')
             ->addSelect('v.codePostal')
             ->where('l.id = :id')

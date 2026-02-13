@@ -540,7 +540,7 @@ public function VilleAjax(Ville $ville, LieuRepository $lieuRepository): Respons
             }
 
             $lieu->setLatitude((float) $lat);
-            $lieu->setLongitute((float) $lon);
+            $lieu->setLongitude((float) $lon);
 
             // ✅ relation ville
             if (method_exists($lieu, 'setVille')) {

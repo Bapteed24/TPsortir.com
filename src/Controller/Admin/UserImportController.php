@@ -36,6 +36,8 @@ public function import(
                 $this->addFlash('danger', $error);
             }
         }
+
+        return $this->redirectToRoute('app_admin_user_list');
     }
 
  return $this->render('admin/user_import/index.html.twig', [

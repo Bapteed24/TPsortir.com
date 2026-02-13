@@ -36,6 +36,7 @@
     <div>
         {% form_theme registrationForm 'bootstrap_5_layout.html.twig' %}
         {{ form_start(registrationForm) }}
+        {{ form_row(registrationForm.username) }}
         {{ form_row(registrationForm.email) }}
         {{ form_row(registrationForm.name) }}
         {{ form_row(registrationForm.firstname) }}
@@ -46,7 +47,7 @@
         {{ form_row(registrationForm.campus) }}
         {{ form_row(registrationForm.photo) }}
 
-        <button type="submit" class="btn btn-succe  ss">S’inscrire</button>
+        <button class="btn btn-success" type="submit" class="btn btn-success">Enregistrer</button>
         {{ form_end(registrationForm) }}
     </div>
 

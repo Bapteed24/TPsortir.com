@@ -26,7 +26,8 @@ use App\Controller\ApiSortieController;
             parameters: ['name' => new QueryParameter(key: 'etat')]
 
         )
-    ]
+    ],
+    paginationEnabled: false
 )]
 #[ORM\Entity(repositoryClass: SortieRepository::class)]
 class Sortie

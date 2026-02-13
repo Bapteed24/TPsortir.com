@@ -35,7 +35,7 @@ class LieuFixtures extends Fixture implements FixtureGroupInterface, DependentFi
         $lieu1->setName("Musée du Louvre");
         $lieu1->setStreet("Rue test");
         $lieu1->setLatitude(48.864824);
-        $lieu1->setLongitute(2.334595);
+        $lieu1->setLongitude(2.334595);
         $ville1 = $this->getReference('ville1', Ville::Class);
 
         $lieu1->setVille($ville1);
@@ -45,7 +45,7 @@ class LieuFixtures extends Fixture implements FixtureGroupInterface, DependentFi
         $lieu2->setName("Disneyland Paris");
         $lieu2->setStreet("Route Nationale 34");
         $lieu2->setLatitude(48.87234);
-        $lieu2->setLongitute(2.775808);
+        $lieu2->setLongitude(2.775808);
         $ville2 = $this->getReference('ville2', Ville::Class);
         $lieu2->setVille($ville2);
         $manager->persist($lieu2);

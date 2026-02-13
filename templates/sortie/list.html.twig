@@ -204,10 +204,10 @@
       {% set markers = [] %}
       {% for s in sorties %}
 
-        {% if s.lieu and s.lieu.latitude and s.lieu.longitute %}
+        {% if s.lieu and s.lieu.latitude and s.lieu.longitude %}
           {% set markers = markers|merge([{
             'lat': s.lieu.latitude,
-            'lng': s.lieu.longitute,
+            'lng': s.lieu.longitude,
             'title': s.name,
             'date': s.dateHeureDebut|date('d/m à H:i'),
             'lieuName': s.lieu.name,

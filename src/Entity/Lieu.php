@@ -31,6 +31,11 @@ class Lieu
     #[Groups(['post:read', 'public'])]
     private ?float $latitude = null;
 
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(['post:read', 'public'])]
+    private ?float $longitude = null;
+
     /**
      * @var Collection<int, Sortie>
      */
@@ -87,14 +92,14 @@ class Lieu
         return $this;
     }
 
-    public function getLongitute(): ?float
+    public function getLongitude(): ?float
     {
-        return $this->longitute;
+        return $this->longitude;
     }
 
-    public function setLongitute(float $longitute): static
+    public function setLongitude(float $longitude): static
     {
-        $this->longitute = $longitute;
+        $this->longitude = $longitude;
 
         return $this;
     }

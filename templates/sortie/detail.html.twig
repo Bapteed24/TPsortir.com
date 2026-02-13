@@ -2,6 +2,16 @@
 
 {% block title %}Afficher une sortie{% endblock %}
 
+{% block stylesheets %}
+    <style>
+        section {
+            padding:20px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+{% endblock %}
+
 {% block body %}
   <main class="container">
     <h1 class="page-title">Afficher une sortie</h1>
@@ -16,6 +26,7 @@
     <a class="btn btn-warning" href="{{ path('sortie_modifier', {id: sortie.id}) }}">
         Modifier
     </a>
+
 {% endif %}
 
 
@@ -162,6 +173,24 @@
           </table>
         </section>
       </div>
+        {% if sortie.lieu.latitude != null and sortie.lieu.longitude != null %}
+            <div id="map" style="height: 300px;"></div>
+        {% endif %}
     </section>
+
+
   </main>
+    {% block javascripts %}
+    <script>
+        var latitude = "{{ sortie.lieu.latitude }}"
+        var longitude = "{{ sortie.lieu.longitude }}"
+        var map = L.map('map').setView([latitude, longitude], 13);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+        var marker = L.marker([latitude, longitude]).addTo(map);
+    </script>
+        {% endblock %}
 {% endblock %}

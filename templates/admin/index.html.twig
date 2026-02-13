@@ -9,7 +9,9 @@
         #block-choice a{
             text-decoration: none;
         }
-
+        .item-dash {
+            width: 20%;
+        }
     </style>
 {% endblock %}
 {% block title %}Hello AdminController!{% endblock %}
@@ -24,10 +26,10 @@
 
 
     <div id="block-choice">
-        <a class="btn btn-outline-primary" href="{{ path('app_admin_user_list') }}">Gérer les utilisateurs</a><br>
-{#        <a href="{{ path('app_admin_sortie_list') }}">Gérer les sorties</a><br>#}
-        <a class="btn btn-outline-primary" href="{{ path('app_admin_campus_list') }}">Gérer les campus</a><br>
-        <a class="btn btn-outline-primary" href="{{ path('app_admin_ville_list') }}">Gérer les villes</a>
+        <a class="btn btn-outline-primary item-dash" href="{{ path('app_admin_user_list') }}">Gérer les utilisateurs</a><br>
+        <a class="btn btn-outline-primary item-dash" href="{{ path('app_admin_campus_list') }}">Gérer les campus</a><br>
+        <a class="btn btn-outline-primary item-dash" href="{{ path('app_admin_ville_list') }}">Gérer les villes</a>
+        <a class="btn btn-outline-primary item-dash" href="{{ path('app_admin_sortie_list') }}">Gérer les sorties</a><br>
     </div>
 
 {% endblock %}

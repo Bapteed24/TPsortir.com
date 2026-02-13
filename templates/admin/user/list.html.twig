@@ -76,9 +76,11 @@
         <thead>
     <th></th>
             <th>Id</th>
+            <th>Pseudo</th>
             <th>Nom</th>
             <th>Prénom</th>
             <th>Campus</th>
+            <th>Actif</th>
             <th></th>
         </thead>
         <tbody>
@@ -89,17 +91,25 @@
     <input type="checkbox" name="ids[]" value="{{ user.id }}" class="userCheckbox">
 </td>
                     <td>{{ user.id}}</td>
+                    <td>{{ user.username }}</td>
                     <td>{{ user.name}}</td>
                     <td>{{ user.firstname}}</td>
                     <td>{{ user.campus.name }}</td>
+                    <td>{% if user.isActif %}<span style="color:#00ff00">Actif</span>{% else %}<span style="color:#ff0000">Inactif</span>{% endif %}</td>
                     <td>
                         <a href="{{ path('adminUserUpdate', {id: user.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
-                        <button class="btn btn-sm btn-danger"
-                                data-bs-toggle="modal"  data-bs-target="#confirmDeleteModal"
-                                data-id="{{ user.id }}"
-                                data-url="{{ path('app_admin_user_delete', { id: user.id }) }}"
-                                data-token="{{ csrf_token('delete' ~ user.id) }}">Supprimer
-                        </button>
+{#                        <button class="btn btn-sm btn-danger"#}
+{#                                data-bs-toggle="modal"  data-bs-target="#confirmDeleteModal"#}
+{#                                data-id="{{ user.id }}"#}
+{#                                data-url="{{ path('app_admin_user_delete', { id: user.id }) }}"#}
+{#                                data-token="{{ csrf_token('delete' ~ user.id) }}">Supprimer#}
+{#                        </button>#}
+                        {% if user.isActif == true %}
+                            <a class="btn btn-sm btn-danger" href="{{ path('admin_user_active', {id: user.id}) }}" class="btn btn-sm btn-warning">Désactiver</a>
+                        {% else %}
+                            <a class="btn btn-sm btn-success" href="{{ path('admin_user_active', {id: user.id}) }}" class="btn btn-sm btn-warning">Activer</a>
+                        {% endif %}
+
                     </td>
                 </tr>
             {% endfor  %}

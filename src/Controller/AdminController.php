@@ -72,6 +72,7 @@ final class AdminController extends AbstractController
                 $user,
                 $form->get('plainPassword')->getData()
             );
+            $user->setRoles(['ROLE_USER']);
             $user->setPassword($hashedPassword);
             $entityManager->persist($user);
             $entityManager->flush();
@@ -148,6 +149,29 @@ final class AdminController extends AbstractController
         // Redirection après inscription
         return $this->redirectToRoute('app_admin_user_list');
     }
+
+    #[Route('/utilisateur/active/{id}', name: 'admin_user_active', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function adminUserActive(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        User $user,
+    ): Response {
+
+        if ($user->isActif()) {
+            $user->setIsActif(false);
+            $this->addFlash('success', "Utilisateur désactivé");
+        }
+        else {
+            $user->setIsActif(true);
+            $this->addFlash('success', "Utilisateur activé");
+        }
+
+        $entityManager->persist($user);
+        $entityManager->flush();
+        return $this->redirectToRoute('app_admin_user_list');
+    }
+
+
 
     #[Route('/utilisateur/supprimer-selection', name: 'app_admin_user_delete_selected', methods: ['POST'])]
 public function adminUserDeleteSelected(

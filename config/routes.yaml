@@ -2,4 +2,9 @@ controllers:
     resource:
         path: ../src/Controller/
         namespace: App\Controller
+        tags: ['controller.service_arguments']
     type: attribute
+
+api_login:
+    path: /api/login
+    methods: [ POST ]

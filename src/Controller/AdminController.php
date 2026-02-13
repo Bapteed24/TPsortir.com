@@ -504,15 +504,14 @@ public function adminAnnulerSortie(
     {
         $error = 0;
         $lieux = $lieuRepository->findBy(["ville" => $ville->getId()]);
-        if ($lieux > 0) {
+
+        if ($lieux) {
             $error++;
             $this->addFlash('danger', 'Impossible de supprimer la viller. Veuillez supprimer lieux liés.');
         }
         if ($error > 0) {
             return $this->redirectToRoute('app_admin_ville_list');
         }
-
-
 
         $entityManager->remove($ville);
         $entityManager->flush();

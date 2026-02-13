@@ -25,13 +25,14 @@ class Lieu
     #[Groups(['post:read'])]
     private ?string $street = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     #[Groups(['post:read'])]
     private ?float $latitude = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     #[Groups(['post:read'])]
     private ?float $longitute = null;
+
 
     /**
      * @var Collection<int, Sortie>

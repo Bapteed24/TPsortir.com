@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -76,6 +77,20 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->setParameter('user', $user)
             ->getQuery()
             ->getResult();
+    }
+
+    public function getUserWithParameter($parameter)
+    {
+        $query = $this->createQueryBuilder('u');
+
+        $query->getQuery()->getResult();
+
+        $query->getQuery()->getResult();
+
+        $paginator = new Paginator($query, true);
+
+        return $paginator;
+
     }
 
 }

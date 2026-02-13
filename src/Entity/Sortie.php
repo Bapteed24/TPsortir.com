@@ -6,6 +6,7 @@ use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\QueryParameter;
 use App\Repository\SortieRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -21,7 +22,9 @@ use App\Controller\ApiSortieController;
             uriTemplate: '/testsortie',
             controller: ApiSortieController::class,
             read: false,
-            name: 'api_testsortie'
+            name: 'api_testsortie',
+            parameters: ['name' => new QueryParameter(key: 'etat')]
+
         )
     ]
 )]

@@ -40,6 +40,11 @@ final class AdminController extends AbstractController
         UserRepository $userRepository,
     ): Response
     {
+//        $parameters = [];
+//        $users = $userRepository->getUserWithParameter($parameters);
+
+//        dump($users);die;
+
         $users = $userRepository->findAll();
         return $this->render('admin/user/list.html.twig', [
             'users' => $users,

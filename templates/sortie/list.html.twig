@@ -215,32 +215,13 @@
           }]) %}
         {% endif %}
       {% endfor %}
-
-      <section class="card mb-4">
-        <h2 class="card-header">Localisation des sorties</h2>
-        <div class="card-body">
-          <div id="map" style="height: 500px; width: 100%; z-index: 1;" data-markers="{{ markers|json_encode }}"></div>
-        </div>
     </div>
-
-    </section>
 
   </main>
 {% endblock %}
 
 {% block javascripts %}
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-          crossorigin="">
-  </script>
 
-  <script>var map = L.map('map').setView([51.505, -0.09], 13);
-    // L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    //   maxZoom: 19,
-    //   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    // }).addTo(map);
-    var marker = L.marker([51.5, -0.09]).addTo(map);
-  </script>
 
 {% endblock %}
 

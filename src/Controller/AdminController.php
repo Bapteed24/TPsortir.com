@@ -16,6 +16,7 @@ use App\Repository\SortieRepository;
 use App\Repository\UserRepository;
 use App\Repository\VilleRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Service\EtatSortieService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -268,6 +269,51 @@ public function adminUserDeleteSelected(
 
         return $this->redirectToRoute('app_admin_sortie_list');
     }
+    
+    #[Route('/sortie/{id}/annuler', name: 'app_admin_sortie_annuler', requirements: ['id' => '\d+'], methods: ['POST'])]
+public function adminAnnulerSortie(
+    Request $request,
+    Sortie $sortie,
+    EntityManagerInterface $em,
+    EtatSortieService $etatSortieService
+): Response {
+
+    /** @var User|null $user */
+    $user = $this->getUser();
+
+    // 🔐 Sécurité admin
+    if (!$user || !$user->isAdmin()) {
+        throw $this->createAccessDeniedException();
+    }
+
+    // 🔐 CSRF
+    if (!$this->isCsrfTokenValid('admin_cancel_sortie_'.$sortie->getId(), $request->request->get('_token'))) {
+        throw $this->createAccessDeniedException();
+    }
+
+    // ❌ Empêcher annulation si déjà commencée
+    $now = new \DateTimeImmutable();
+    if ($sortie->getDateHeureDebut() <= $now) {
+        $this->addFlash('danger', 'Annulation impossible : la sortie a déjà commencé.');
+        return $this->redirectToRoute('app_admin_sortie_list');
+    }
+
+    // ❌ Empêcher si pas Ouverte
+    if ($sortie->getEtat()->getLibelle() !== 'Ouverte') {
+        $this->addFlash('danger', 'Annulation impossible : sortie non ouverte.');
+        return $this->redirectToRoute('app_admin_sortie_list');
+    }
+
+    // ✅ Annulation
+    $sortie->setEtat($etatSortieService->getEtat('Annulée'));
+
+    $em->flush();
+
+    $this->addFlash('success', 'Sortie annulée par admin ✅');
+
+    return $this->redirectToRoute('app_admin_sortie_list');
+}
+
 
     #[Route('/campus/list', name: 'app_admin_campus_list')]
     public function listeCampus(CampusRepository $campusRepository, Request $request): Response

@@ -17,6 +17,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Repository\VilleRepository;
+use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+
 
 class SortieController extends AbstractController
 {
@@ -470,5 +475,106 @@ public function VilleAjax(Ville $ville, LieuRepository $lieuRepository): Respons
         'groups' => ['post:read'],
     ]);
 }
+    #[Route('/ajax/lieu/create', name: 'lieu_create_ajax', methods: ['POST'])]
+    public function lieuCreateAjax(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        \App\Repository\VilleRepository $villeRepository,
+        \Symfony\Component\Validator\Validator\ValidatorInterface $validator,
+        \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf
+    ): JsonResponse {
+        try {
+            $data = json_decode($request->getContent(), true);
+
+            if (!is_array($data)) {
+                return $this->json(['message' => 'JSON invalide'], 400);
+            }
+
+            // CSRF
+            $token = new \Symfony\Component\Security\Csrf\CsrfToken('create_lieu', $data['_token'] ?? '');
+            if (!$csrf->isTokenValid($token)) {
+                return $this->json(['message' => 'CSRF invalide'], 400);
+            }
+
+            $villeId = (int)($data['villeId'] ?? 0);
+            if ($villeId <= 0) {
+                return $this->json(['message' => 'Ville manquante'], 422);
+            }
+
+            $ville = $villeRepository->find($villeId);
+            if (!$ville) {
+                return $this->json(['message' => 'Ville invalide'], 422);
+            }
+
+            $name = trim((string)($data['name'] ?? ''));
+            $street = trim((string)($data['street'] ?? ''));
+
+            if ($name === '' || $street === '') {
+                return $this->json(['message' => 'Nom et rue obligatoires'], 422);
+            }
+
+            $lieu = new \App\Entity\Lieu();
+
+            // ✅ setName / setNom
+            if (method_exists($lieu, 'setName')) {
+                $lieu->setName($name);
+            } elseif (method_exists($lieu, 'setNom')) {
+                $lieu->setNom($name);
+            } else {
+                return $this->json(['message' => 'Setter nom introuvable (setName/setNom)'], 500);
+            }
+
+            // ✅ setStreet / setRue
+            if (method_exists($lieu, 'setStreet')) {
+                $lieu->setStreet($street);
+            } elseif (method_exists($lieu, 'setRue')) {
+                $lieu->setRue($street);
+            } else {
+                return $this->json(['message' => 'Setter rue introuvable (setStreet/setRue)'], 500);
+            }
+            $lat = $data['latitude'] ?? null;
+            $lon = $data['longitude'] ?? null;
+
+            if ($lat === null || $lat === '' || $lon === null || $lon === '') {
+                return $this->json(['message' => 'Latitude et longitude obligatoires'], 422);
+            }
+
+            $lieu->setLatitude((float) $lat);
+            $lieu->setLongitute((float) $lon);
+
+            // ✅ relation ville
+            if (method_exists($lieu, 'setVille')) {
+                $lieu->setVille($ville);
+            } else {
+                return $this->json(['message' => 'Setter ville introuvable (setVille)'], 500);
+            }
+
+            // Validation Symfony (Assert\NotBlank, etc.)
+            $errors = $validator->validate($lieu);
+            if (count($errors) > 0) {
+                $out = [];
+                foreach ($errors as $e) {
+                    $out[$e->getPropertyPath()][] = $e->getMessage();
+                }
+                return $this->json(['message' => 'Validation', 'errors' => $out], 422);
+            }
+
+            $entityManager->persist($lieu);
+            $entityManager->flush();
+
+            return $this->json([
+                'id' => $lieu->getId(),
+                'name' => method_exists($lieu, 'getName') ? $lieu->getName() : (method_exists($lieu, 'getNom') ? $lieu->getNom() : $name),
+            ], 201);
+
+        } catch (\Throwable $e) {
+            return $this->json([
+                'message' => 'Erreur serveur',
+                'debug' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
 
 }

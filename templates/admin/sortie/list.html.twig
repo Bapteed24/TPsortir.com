@@ -71,6 +71,7 @@
                 <th></th>
             </thead>
             {% for sortie in sorties %}
+            
                 <tr>
                     <td>{{ sortie.name }}</td>
                     <td>{{ sortie.dateHeureDebut|date }}</td>
@@ -80,6 +81,23 @@
                     <td>
                         <a href="{{ path('app_admin_sortie_update', {id:sortie.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
                         <a href="{{ path('app_admin_sortie_delete', {id:sortie.id}) }}"  class="btn btn-sm btn-danger">Supprimer</a>
+                        
+                        <form method="post"
+      action="{{ path('app_admin_sortie_annuler', {id: sortie.id}) }}"
+      style="display:inline-block">
+
+    <input type="hidden"
+           name="_token"
+           value="{{ csrf_token('admin_cancel_sortie_' ~ sortie.id) }}">
+
+    <button class="btn btn-danger btn-sm"
+            onclick="return confirm('Annuler cette sortie ?');">
+        Annuler
+    </button>
+
+</form>
+
+                        
                     </td>
                 </tr>
             {% endfor %}
